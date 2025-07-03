@@ -1,20 +1,27 @@
-import { useEffect } from 'react';
+import { useDeepCompareEffect } from 'ahooks';
 import { type BackButtonEnableArgs, HeaderBackButtonStore } from '@/features/header/header-back-button.store';
+import { TelegramNativeBackButtonService } from '@/features/header/telegram-native-back-button.service.ts';
 import { useBackFn } from '@/shared/hooks/useBackFn.ts';
 
 
-type Args = {
+type Args = BackButtonEnableArgs & {
   isEnabled?: boolean;
-} & BackButtonEnableArgs;
+};
 
-export function useBackHeaderButton(args: Args) {
-  const { isEnabled = true, fallback, route } = args;
+export function useBackHeaderButton({ isEnabled = true, ...args }: Args) {
+  const { goBack } = useBackFn(args);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (!isEnabled) return;
-    HeaderBackButtonStore.enable({ route, fallback } as BackButtonEnableArgs);
-    return HeaderBackButtonStore.reset;
-  }, [fallback, isEnabled, route]);
 
-  return useBackFn(args);
+    const storeReset = HeaderBackButtonStore.enable(args);
+    const tgNativeButtonReset = TelegramNativeBackButtonService.enable(goBack);
+
+    return () => {
+      storeReset();
+      tgNativeButtonReset();
+    };
+  }, [isEnabled, args, goBack]);
+
+  return { goBack };
 }

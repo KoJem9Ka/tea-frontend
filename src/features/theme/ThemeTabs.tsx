@@ -1,7 +1,8 @@
-import { type Theme, ThemeStore } from '@/features/theme/theme.store';
+import { ThemeStore } from '@/features/theme/theme.store';
 import { useSignals } from '@/shared/backbone/signals';
 import { Icon, Iconify } from '@/shared/components/Iconify';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
+import type { Theme } from '@/shared/types/theme.ts';
 
 
 export function ThemeTabs() {

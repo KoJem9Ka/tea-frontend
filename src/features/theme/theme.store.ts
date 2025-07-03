@@ -1,8 +1,8 @@
 import type { ReadonlyDeep } from 'type-fest';
 import { batch, deepSignal, effect, signal } from '@/shared/backbone/signals';
+import { localStorageSafe } from '@/shared/lib/localStorageSafe.ts';
+import type { Theme } from '@/shared/types/theme.ts';
 
-
-export type Theme = 'system' | 'light' | 'dark';
 
 type ThemeStore = ReadonlyDeep<{
   theme: Theme;
@@ -17,10 +17,8 @@ function createThemeStore(): ThemeStore {
   const _isDarkByMediaMatch = signal(matchMedia.matches);
   matchMedia.addEventListener('change', (e) => void (_isDarkByMediaMatch.value = e.matches), abortController);
 
-  const initialTheme = localStorage.getItem('theme') as Theme | undefined || 'system';
-
   const store = deepSignal({
-    theme: initialTheme,
+    theme: localStorageSafe.theme.getOr('system'),
     get isDark(): boolean {
       return this.theme === 'system'
         ? _isDarkByMediaMatch.value
@@ -38,7 +36,7 @@ function createThemeStore(): ThemeStore {
   }, 'ThemeStore');
 
   const themeEffectUnsub = effect(() => {
-    localStorage.setItem('theme', store.theme);
+    localStorageSafe.theme.set(store.theme);
     document.body.classList.toggle('dark', store.isDark);
     // document.body.classList.toggle('light', !store.isDark);
   });

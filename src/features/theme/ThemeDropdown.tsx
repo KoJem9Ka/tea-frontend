@@ -1,5 +1,4 @@
 import type { ComponentProps } from 'react';
-import type { Theme } from '@/features/theme/theme.store';
 import { ThemeStore } from '@/features/theme/theme.store';
 import { useSignals } from '@/shared/backbone/signals';
 import { Icon, Iconify } from '@/shared/components/Iconify';
@@ -11,6 +10,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger
 } from '@/shared/components/ui/dropdown-menu'
+import type { Theme } from '@/shared/types/theme.ts';
 
 
 export function ThemeDropdown(props: ComponentProps<typeof Button>) {

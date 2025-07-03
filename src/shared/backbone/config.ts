@@ -24,6 +24,7 @@ if (!env.success) {
 }
 
 export const config = merge({
+  appUniqueId: '__TEA_FRONTEND_APP__',
   isProd: import.meta.env.PROD,
   isDev: import.meta.env.DEV,
   isTest: import.meta.env.TEST,

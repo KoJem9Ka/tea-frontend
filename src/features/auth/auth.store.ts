@@ -1,19 +1,11 @@
+import { isTMA } from '@telegram-apps/sdk-react';
 import { jwtDecode } from 'jwt-decode';
 import type { ReadonlyDeep } from 'type-fest';
-import { z } from 'zod/v4';
-import { TelegramUserDataFromWidget } from '@/features/auth/types';
-import { AccessTokenDecoded, backendClientEmitter, BackendClientEvent, backendClientSettings } from '@/shared/backbone/backend/backend-client';
+import { type AccessTokenDecoded, backendClientEmitter, BackendClientEvent, backendClientSettings } from '@/shared/backbone/backend/backend-client';
 import { batch, deepSignal, effect } from '@/shared/backbone/signals';
 import { $QUERY_KEYS_PRIVATE_USER } from '@/shared/backbone/tanstack-query/query-keys';
-import { safeSync } from '@/shared/lib/independent/safe';
-
-
-const User = z.object({
-  telegram: TelegramUserDataFromWidget,
-  accessToken: z.string(),
-  accessTokenDecoded: AccessTokenDecoded,
-});
-type User = z.infer<typeof User>;
+import { localStorageSafe } from '@/shared/lib/localStorageSafe.ts';
+import { type User } from '@/shared/types/auth/user.ts';
 
 
 type AuthStoreRaw = {
@@ -28,18 +20,8 @@ type AuthStoreRaw = {
 type AuthStore = ReadonlyDeep<AuthStoreRaw>
 
 function createAuthStore(): AuthStore {
-  const getInitialUser = () => {
-    const userString = localStorage.getItem('auth.user');
-    if (!userString) return null;
-    const userUnchecked = safeSync<unknown>(() => JSON.parse(userString));
-    if (!userUnchecked.ok) return null;
-    const user = User.safeParse(userUnchecked.data);
-    if (!user.success) return null;
-    return user.data;
-  };
-
   const store = deepSignal<AuthStoreRaw>({
-    user: getInitialUser(),
+    user: isTMA() ? null : localStorageSafe.user.getOrNull(),
     get isAdmin() {
       return this.user?.accessTokenDecoded.role === 'admin';
     },

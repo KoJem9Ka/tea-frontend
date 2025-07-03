@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef } from 'react';
 import { useAuthMutation } from '@/features/auth/hooks/useAuthMutation';
-import type { TelegramUserDataFromWidget } from '@/features/auth/types';
 import { config } from '@/shared/backbone/config';
+import type { TelegramUserDataFromWidget } from '@/shared/types/auth/telegram-user-data-from-widget.ts';
 
 
 export function TelegramLoginButton() {

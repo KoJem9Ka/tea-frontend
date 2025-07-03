@@ -1,3 +1,4 @@
+import { backButton } from '@telegram-apps/sdk';
 import { batch, deepSignal } from '@/shared/backbone/signals';
 import type { UseBackFnArgs } from '@/shared/hooks/useBackFn.ts';
 
@@ -5,32 +6,38 @@ import type { UseBackFnArgs } from '@/shared/hooks/useBackFn.ts';
 export type BackButtonEnableArgs = UseBackFnArgs;
 
 type HeaderBackButtonStoreRaw = {
-  isVisible: boolean;
+  isWebButtonVisible: boolean;
+  isTelegramButtonVisible: boolean;
   target: BackButtonEnableArgs | null;
-  enable: (args: BackButtonEnableArgs) => void;
-  reset: () => void;
+  enable: (args: BackButtonEnableArgs) => VoidFunction;
+  dispose: VoidFunction;
 }
 type HeaderBackButtonStore = Readonly<HeaderBackButtonStoreRaw>
 
 function createHeaderBackButtonStore(): HeaderBackButtonStore {
   const store = deepSignal<HeaderBackButtonStoreRaw>({
-    isVisible: false,
+    isWebButtonVisible: false,
+    isTelegramButtonVisible: false,
     target: null,
 
     enable(route) {
       batch(() => {
-        store.isVisible = true;
+        store.isWebButtonVisible = true;
         store.target = route;
-      }, 'HeaderBackButtonStore.setCustomRoute', { route });
+      }, 'HeaderBackButtonStore.enable', { route });
+      return () => {
+        batch(() => {
+          store.isWebButtonVisible = false;
+          store.target = null;
+        }, 'HeaderBackButtonStore.reset');
+      };
     },
-
-    reset() {
-      batch(() => {
-        store.isVisible = false;
-        store.target = null;
-      }, 'HeaderBackButtonStore.reset');
+    dispose() {
+      unsub();
     },
   }, 'HeaderBackButtonStore');
+
+  const unsub = backButton.isVisible.sub(isVisible => void (store.isTelegramButtonVisible = isVisible));
 
   return store;
 }
