@@ -1,6 +1,6 @@
 import { readableColor } from 'color2k';
 import { Fragment } from 'react';
-import { useTagsQuery, tagsQueryOptions } from '@/features/tags';
+import { tagsQueryOptions, useTagsQuery } from '@/features/tags';
 import { TeaFiltersStore } from '@/features/tea/tea-filters.store';
 import { useSignals } from '@/shared/backbone/signals';
 import { MultiSelect, type MultiSelectProps } from '@/shared/components/ui/multi-select';

@@ -1,6 +1,7 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
+// import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { init, miniApp, retrieveLaunchParams, retrieveRawInitData } from '@telegram-apps/sdk';
 import { isTMA } from '@telegram-apps/sdk-react';
 import { AuthService } from '@/features/auth';
@@ -25,7 +26,7 @@ import { Header } from '@/features/header';
 // }
 // };
 
- 
+
 interface MyRouterContext {
   queryClient: QueryClient;
 }

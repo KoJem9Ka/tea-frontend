@@ -13,7 +13,7 @@ export function useAbortController(): [AbortSignal, VoidFunction] {
     };
   }, [abortController]);
 
-  const abort = useCallback(()=>{
+  const abort = useCallback(() => {
     if (abortController.signal.aborted) return;
     abortController.abort();
   }, [abortController]);

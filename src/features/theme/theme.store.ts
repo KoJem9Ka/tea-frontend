@@ -27,7 +27,7 @@ function createThemeStore(): ThemeStore {
         : this.theme === 'dark';
     },
     setTheme(theme: Theme) {
-      batch(()=>{
+      batch(() => {
         store.theme = theme;
       }, 'ThemeStore.setTheme', { theme });
     },

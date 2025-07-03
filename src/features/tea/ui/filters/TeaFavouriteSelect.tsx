@@ -23,10 +23,10 @@ export function TeaFavouriteSelect() {
     { value: JSON.stringify(false), label: 'Нет' },
   ];
 
-  const currentValue = JSON.stringify(TeaFiltersStore.filter.isFavourite ?? null);
+  const currentValue = JSON.stringify(TeaFiltersStore.filter.isOnlyFavourite ?? null);
 
   const handleSelectChange: SelectProps['onValueChange'] = value => {
-    TeaFiltersStore.setIsFavourite(JSON.parse(value) as null | boolean);
+    TeaFiltersStore.setIsOnlyFavourite(JSON.parse(value) as null | boolean);
   };
 
   return (

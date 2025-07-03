@@ -3,11 +3,12 @@ import { CategoriesApi } from '@/features/categories/categories.api';
 import { queryClient } from '@/shared/backbone/tanstack-query/query-client';
 import { QUERY_KEYS } from '@/shared/backbone/tanstack-query/query-keys';
 import { Ms } from '@/shared/lib/independent/ms';
+import type { AdditionalQueryOptions } from '@/shared/types/types.ts';
 
 
 const PLACEHOLDER_DATA = [] as never[];
 
-export function categoriesListQueryOptions() {
+export function categoriesQueryOptions() {
   return queryOptions({
     queryKey: QUERY_KEYS.CATEGORY.LIST(),
     queryFn: CategoriesApi.list,
@@ -16,19 +17,15 @@ export function categoriesListQueryOptions() {
   });
 }
 
-export function useCategoriesQuery() {
-  return useQuery(categoriesListQueryOptions());
+export function useCategoriesQuery(options?: AdditionalQueryOptions<ReturnType<typeof categoriesQueryOptions>>) {
+  return useQuery({ ...categoriesQueryOptions(), ...options });
 }
 
-export function useCategorySharedQuery(id: string) {
-  return useQuery({ ...categoriesListQueryOptions(), enabled: !!id });
-}
-
-categoriesListQueryOptions.invalidateROOT = () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CATEGORY.ROOT() });
-categoriesListQueryOptions.prefetch = () => queryClient.prefetchQuery(categoriesListQueryOptions());
-categoriesListQueryOptions.getData = function() {
-  return queryClient.getQueryData(categoriesListQueryOptions().queryKey);
+categoriesQueryOptions.invalidateROOT = () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CATEGORY.ROOT() });
+categoriesQueryOptions.prefetch = () => queryClient.prefetchQuery(categoriesQueryOptions());
+categoriesQueryOptions.getData = function() {
+  return queryClient.getQueryData(categoriesQueryOptions().queryKey);
 };
-categoriesListQueryOptions.getState = function() {
-  return queryClient.getQueryState(categoriesListQueryOptions().queryKey);
+categoriesQueryOptions.getState = function() {
+  return queryClient.getQueryState(categoriesQueryOptions().queryKey);
 };

@@ -1,8 +1,8 @@
 import type { ComponentProps } from 'react';
 import { AuthStore } from '@/features/auth';
 import { TeaCategorySelect } from '@/features/tea/ui/filters/TeaCategorySelect';
-import { TeaIsDeletedSwitch } from '@/features/tea/ui/filters/TeaIsDeletedSwitch.tsx';
-import { TeaIsFavouriteSwitch } from '@/features/tea/ui/filters/TeaIsFavouriteSwitch.tsx';
+import { TeaIsOnlyFavouriteSwitch } from '@/features/tea/ui/filters/TeaIsOnlyFavouriteSwitch.tsx';
+import { TeaIsOnlyHiddenSwitch } from '@/features/tea/ui/filters/TeaIsOnlyHiddenSwitch.tsx';
 import { TeaPriceRange } from '@/features/tea/ui/filters/TeaPriceRange';
 import { TeaSortBySelect } from '@/features/tea/ui/filters/TeaSortBySelect';
 import { TeaSortOrderSelect } from '@/features/tea/ui/filters/TeaSortOrderSelect';
@@ -19,12 +19,14 @@ export function TeaFilters({ className, tagsSelectClassName, ...props }: TeaFilt
     <div className={cn('flex flex-col space-y-4 min-w-[180px]', className)} {...props}>
       <TeaCategorySelect />
       <TeaTagsMultiSelect className={tagsSelectClassName} />
-      <TeaIsFavouriteSwitch />
+      {AuthStore.isAuthorized ? (
+        <TeaIsOnlyFavouriteSwitch />
+      ) : null}
       <TeaPriceRange />
       <TeaSortBySelect />
       <TeaSortOrderSelect />
       {AuthStore.isAdmin ? (
-        <TeaIsDeletedSwitch />
+        <TeaIsOnlyHiddenSwitch />
       ) : null}
     </div>
   );

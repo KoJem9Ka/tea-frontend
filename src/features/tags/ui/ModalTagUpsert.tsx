@@ -1,12 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type PropsWithChildren, useRef } from 'react';
+import { cloneDeep, merge } from 'lodash-es';
+import { type PropsWithChildren, useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import type { z } from 'zod/v4';
 import { useTagUpsertMutation } from '@/features/tags/hooks/useTagUpsertMutation';
 import { TagUpsertReqBody } from '@/features/tags/tags.api';
+import type { Tag } from '@/shared/backbone/backend/model/tag';
 import { ColorPickerField } from '@/shared/components/ColorPicker';
-import { ResponsiveDialog, type ResponsiveDialogControlRef } from '@/shared/components/ResponsiveDialog';
-import { TeaTag } from '@/shared/components/TeaTag.tsx';
+import { FormTextInput } from '@/shared/components/form/FormTextInput.tsx';
+import { Icon, Iconify } from '@/shared/components/Iconify';
+import { ResponsiveDialog } from '@/shared/components/ResponsiveDialog';
+import { TeaTag } from '@/shared/components/TeaTag';
 import { Button } from '@/shared/components/ui/button';
 import {
   FormControl,
@@ -16,25 +20,32 @@ import {
   FormMessage,
   FormProvider
 } from '@/shared/components/ui/form'
-import { Input } from '@/shared/components/ui/input';
+import { useAbortController } from '@/shared/hooks/useAbortSignal.ts';
 
 
 type OnSuccessFn = (tagId: string) => void | PromiseLike<void>;
 
-export function ModalTagUpsert({ id, children, onSuccess }: PropsWithChildren<{ id?: string, onSuccess?: OnSuccessFn }>) {
-  const ref = useRef<ResponsiveDialogControlRef>(null);
+export function ModalTagUpsert({
+  children,
+  onSuccess,
+  defaultValues,
+}: PropsWithChildren<{
+  onSuccess?: OnSuccessFn;
+  defaultValues?: Tag;
+}>) {
+  const [successUpsertSignal, onSuccessUpsert] = useAbortController();
 
   const _onSuccess: OnSuccessFn = async tagId => {
-    ref.current?.close();
+    onSuccessUpsert();
     await onSuccess?.(tagId);
   };
 
   return (
     <ResponsiveDialog
-      controlRef={ref}
-      title={id ? 'Изменение тега' : 'Новый тег'}
+      signal={successUpsertSignal}
+      title={defaultValues ? 'Изменение тега' : 'Новый тег'}
       triggerSlot={children}
-      formSlot={<TagUpsertForm id={id} onSuccess={_onSuccess} />}
+      formSlot={<TagUpsertForm defaultValues={defaultValues} onSuccess={_onSuccess} />}
     />
   );
 }
@@ -43,29 +54,24 @@ export function ModalTagUpsert({ id, children, onSuccess }: PropsWithChildren<{ 
 const FormSchema = TagUpsertReqBody;
 type FormSchema = z.infer<typeof FormSchema>;
 
-function TagUpsertForm({ onSuccess }: {
-  id?: string,
+function TagUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
   onSuccess?: OnSuccessFn;
+  defaultValues?: Tag;
 }) {
   const mutation = useTagUpsertMutation();
 
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: '',
-      color: '#3B82F6',
-    },
-  });
+  const defaultValues = useMemo(() => merge(cloneDeep(DEFAULT_VALUES), defaultValuesRaw), [defaultValuesRaw]);
+
+  const form = useForm<FormSchema>({ resolver: zodResolver(FormSchema), defaultValues });
 
   const handleSubmit = form.handleSubmit(async (data: FormSchema) => {
     const res = await mutation.mutateAsync(data);
-    form.reset();
     await onSuccess?.(res.id);
-  });
+  }) as VoidFunction;
 
   return (
     <FormProvider {...form}>
-      <form className='space-y-4' onSubmit={handleSubmit as VoidFunction}>
+      <form className='space-y-4'>
         <div className='grid grid-cols-2 rounded-md overflow-hidden border'>
           <div className='dark flex justify-center items-center bg-background text-foreground p-4 overflow-hidden *:text-wrap *:max-w-full *:break-all'>
             <TeaTagVisualized control={form.control} />
@@ -75,18 +81,11 @@ function TagUpsertForm({ onSuccess }: {
           </div>
         </div>
 
-        <FormField
+        <FormTextInput
           control={form.control}
           name='name'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Название</FormLabel>
-              <FormControl>
-                <Input placeholder='Название тега...' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label='Название'
+          placeholder='Название тега...'
         />
 
         <FormField
@@ -103,14 +102,28 @@ function TagUpsertForm({ onSuccess }: {
           )}
         />
 
-        <Button
-          type='submit'
-          className='w-full'
-          disabled={mutation.isPending}
-          isLoading={mutation.isPending}
-        >
-          {mutation.isPending ? 'Создание...' : 'Создать'}
-        </Button>
+        <div className='grid grid-cols-2 gap-4'>
+          <Button
+            className='w-full'
+            disabled={mutation.isPending || !form.formState.isDirty}
+            onClick={() => form.reset()}
+            variant='secondary'
+          ><Iconify icon={Icon.ResetUndo} />Сброс</Button>
+
+          <Button
+            type='submit'
+            className='w-full'
+            disabled={!form.formState.isDirty}
+            isLoading={mutation.isPending}
+            onClick={handleSubmit}
+          >
+            {mutation.isPending ? <Iconify icon={Icon.LoadingSpinner} /> : <Iconify icon={Icon.SaveDiskette} />}
+            {mutation.isPending ?
+              defaultValues.id ? 'Сохранение...' : 'Создание...' :
+              defaultValues.id ? 'Сохранить' : 'Создать'
+            }
+          </Button>
+        </div>
       </form>
     </FormProvider>
   );
@@ -124,3 +137,8 @@ function TeaTagVisualized({ control }: {
 
   return <TeaTag name={name} color={color} />;
 }
+
+const DEFAULT_VALUES: FormSchema = {
+  name: '',
+  color: '#3B82F6',
+};

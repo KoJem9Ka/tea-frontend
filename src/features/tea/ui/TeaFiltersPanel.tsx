@@ -2,6 +2,7 @@ import type { ComponentProps } from 'react';
 import { TeaFiltersStore } from '@/features/tea/tea-filters.store';
 import { TeaFilters } from '@/features/tea/ui/filters/TeaFilters';
 import { useSignals } from '@/shared/backbone/signals';
+import { Icon, Iconify } from '@/shared/components/Iconify.tsx';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -29,7 +30,7 @@ export function TeaFiltersPanel({ className, ...props }: ComponentProps<'div'>) 
           variant='secondary'
           size='sm'
           onClick={TeaFiltersStore.clear}
-        >Сброс</Button>
+        ><Iconify icon={Icon.ResetUndo} />Сброс</Button>
       </CardFooter>
     </Card>
   );

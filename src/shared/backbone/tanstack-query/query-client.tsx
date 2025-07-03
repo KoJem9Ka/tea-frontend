@@ -28,6 +28,7 @@ export const queryClient = new QueryClient({
       staleTime: 0,
       gcTime: Ms.day(1),
       retry: 0, // Retries handled by ky client
+      throwOnError: true,
     },
     mutations: {
       gcTime: 0,

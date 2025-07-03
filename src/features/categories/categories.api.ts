@@ -36,7 +36,8 @@ export const CategoriesApi: CategoriesApi = {
     const url = 'api/v1/categories';
     const method = 'GET';
     const res = await backendClient(url, { method }).json();
-    return CategoriesListResBody.parse(res);
+    const data = CategoriesListResBody.parse(res);
+    return data.sort((a, b) => a.name.localeCompare(b.name));
   },
   upsert: async ({ id, ...body }) => {
     const url = id ? `api/v1/categories/${id}` : 'api/v1/categories';

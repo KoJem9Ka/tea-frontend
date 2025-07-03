@@ -1,4 +1,4 @@
-import { minMaxPricesQuery , useMinMaxPricesQuery } from '@/features/tea/hooks/useMinMaxPricesQuery';
+import { minMaxPricesQuery, useMinMaxPricesQuery } from '@/features/tea/hooks/useMinMaxPricesQuery';
 import { TeaFiltersStore } from '@/features/tea/tea-filters.store';
 import { useSignals } from '@/shared/backbone/signals';
 import { Skeleton } from '@/shared/components/ui/skeleton';

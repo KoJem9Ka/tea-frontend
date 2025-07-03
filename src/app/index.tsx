@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { categoriesListQueryOptions } from '@/features/categories';
+import { categoriesQueryOptions } from '@/features/categories';
 import { tagsQueryOptions } from '@/features/tags';
 import {
   minMaxPricesQuery,
@@ -18,7 +18,7 @@ export const Route = createFileRoute('/')({
   component: HomePageComponent,
   loader: async ({ context: { queryClient } }) => {
     await Promise.all([
-      queryClient.ensureQueryData(categoriesListQueryOptions()),
+      queryClient.ensureQueryData(categoriesQueryOptions()),
       queryClient.ensureQueryData(tagsQueryOptions()),
       queryClient.ensureQueryData(minMaxPricesQuery()),
       queryClient.ensureInfiniteQueryData(teaInfiniteQueryOptions(TeaFiltersStore.filterDebounced)),

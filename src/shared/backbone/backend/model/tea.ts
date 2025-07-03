@@ -11,7 +11,7 @@ export const Tea = z.object({
   description: z.string().nonempty({ error: 'Обязательное поле' }).optional(),
   categoryId: z.uuid({ error: issue => !issue.input ? 'Обязательное поле' : 'Неверный формат' }),
   tags: z.array(Tag).optional(),
-  isDeleted: z.boolean().optional(),
+  isHidden: z.boolean().optional(),
 });
 
 export type TeaUpsert = z.infer<typeof TeaUpsert>;

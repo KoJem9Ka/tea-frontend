@@ -1,6 +1,6 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
 import { CategoriesApi, type CategoryOneReqParams } from '@/features/categories/categories.api';
-import { categoriesListQueryOptions } from '@/features/categories/hooks/useCategoriesQuery';
+import { categoriesQueryOptions } from '@/features/categories/hooks/useCategoriesQuery';
 import { queryClient } from '@/shared/backbone/tanstack-query/query-client';
 import { QUERY_KEYS } from '@/shared/backbone/tanstack-query/query-keys';
 import { Ms } from '@/shared/lib/independent/ms';
@@ -11,7 +11,7 @@ const DEFAULT_OPTIONS = queryOptions({
   queryKey: QUERY_KEYS.CATEGORY.ONE({ id: '' }),
   queryFn: ({ queryKey: { 2: params } }) => CategoriesApi.one(params),
   staleTime: Ms.minute(10),
-  initialDataUpdatedAt: () => categoriesListQueryOptions.getState()
+  initialDataUpdatedAt: () => categoriesQueryOptions.getState()
     ?.dataUpdatedAt,
 });
 
@@ -19,7 +19,7 @@ export function categoryQueryOptions(params: CategoryOneReqParams) {
   return queryOptions({
     ...DEFAULT_OPTIONS,
     queryKey: QUERY_KEYS.CATEGORY.ONE(params),
-    initialData: () => categoriesListQueryOptions.getData()
+    initialData: () => categoriesQueryOptions.getData()
       ?.find(c => c.id === params.id),
   });
 }

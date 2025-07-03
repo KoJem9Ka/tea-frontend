@@ -1,13 +1,12 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { AuthStore, TelegramLoginCustomButton } from '@/features/auth';
-import { categoriesListQueryOptions, useCategoryQuery } from '@/features/categories';
+import { categoriesQueryOptions, useCategoryQuery } from '@/features/categories';
 import { useBackHeaderButton } from '@/features/header';
-import { TeaDeleteForm, TeaEvaluationForm, teaQueryOptions, useTeaQuery } from '@/features/tea';
+import { ModalTeaDelete, TeaEvaluationForm, teaQueryOptions, useTeaQuery } from '@/features/tea';
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
 import { Container } from '@/shared/components/Container';
 import { Icon, Iconify } from '@/shared/components/Iconify';
-import { ResponsiveDialog } from '@/shared/components/ResponsiveDialog.tsx';
 import { ErrorRouteComponent } from '@/shared/components/routes/ErrorRouteComponent';
 import { TeaTag } from '@/shared/components/TeaTag';
 import { Button } from '@/shared/components/ui/button';
@@ -19,17 +18,17 @@ import {
   CardTitle
 } from '@/shared/components/ui/card'
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { useAbortController } from '@/shared/hooks/useAbortSignal.ts';
 import { formatterCurrencyRU } from '@/shared/lib/independent/formatter-currency-ru';
 import { isNotFound } from '@/shared/lib/independent/http';
 import { throwErr } from '@/shared/lib/independent/throw';
+import type { MaybePromise } from '@/shared/types/types.ts';
 
 
 export const Route = createFileRoute('/tea/$id')({
   component: TeaPageComponent,
   loader: async ({ context: { queryClient }, params }) => {
     await Promise.all([
-      queryClient.ensureQueryData(categoriesListQueryOptions()),
+      queryClient.ensureQueryData(categoriesQueryOptions()),
       // FIXME: backend overload, because of "Preload: 'viewport'" on router config
       queryClient.ensureQueryData(teaQueryOptions(params)),
     ]).catch((error: unknown) => throwErr(isNotFound(error) ? notFound() : error));
@@ -39,7 +38,7 @@ export const Route = createFileRoute('/tea/$id')({
 
 function TeaPageComponent() {
   useSignals();
-  const { goBack } = useBackHeaderButton({ fallback: ROUTES.HOME });
+  const { goBack } = useBackHeaderButton({ route: ROUTES.HOME });
   const params = Route.useParams();
   const teaQuery = useTeaQuery(params);
   const categoryQuery = useCategoryQuery(
@@ -64,16 +63,11 @@ function TeaPageComponent() {
 type TeaPageProps = {
   tea: NonNullable<ReturnType<typeof useTeaQuery>['data']>,
   category: NonNullable<ReturnType<typeof useCategoryQuery>['data']>,
-  goBack: VoidFunction,
+  goBack: () => MaybePromise,
 }
 
 function TeaPage({ tea, category, goBack }: TeaPageProps) {
   useSignals();
-  const [successDeleteSignal, onSuccessDeleteRaw] = useAbortController();
-  const onSuccessDelete = () => {
-    onSuccessDeleteRaw();
-    goBack();
-  };
 
   return (
     <Container className='sm:w-auto'>
@@ -119,15 +113,12 @@ function TeaPage({ tea, category, goBack }: TeaPageProps) {
       )}
 
       {AuthStore.isAdmin ? (<>
-        {tea.isDeleted ? <Button variant='destructive' disabled>Скрыт из ассортимента</Button> : null}
+        {tea.isHidden ? <Button variant='destructive' disabled>Скрыт из ассортимента</Button> : null}
 
         <div className='grid grid-cols-2 gap-3'>
-          <ResponsiveDialog
-            title='Удаление чая'
-            signal={successDeleteSignal}
-            triggerSlot={<Button variant='outline'><Iconify icon={Icon.DeleteTrashCan} />Удалить</Button>}
-            formSlot={<TeaDeleteForm id={tea.id} name={tea.name} onSuccess={onSuccessDelete} />}
-          />
+          <ModalTeaDelete onSuccess={goBack} id={tea.id} name={tea.name}>
+            <Button variant='outline'><Iconify icon={Icon.DeleteTrashCan} />Удалить</Button>
+          </ModalTeaDelete>
 
           <Button asChild variant='outline'>
             <Link {...ROUTES.ADMIN_TEA_EDIT(tea.id)}>

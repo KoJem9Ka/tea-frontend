@@ -14,9 +14,9 @@ export type TeasListReqQueryFilters = {
   sortBy?: TeasListFilterSortBy;
   servePrice?: TeasListFilterServePrice;
   /* For authorized */
-  isFavourite?: boolean;
+  isOnlyFavourite?: boolean;
   /* For role=admin */
-  isDeleted?: boolean;
+  isOnlyHidden?: boolean;
 }
 export type TeasListReqQueryPagination = {
   /* @min 1 */

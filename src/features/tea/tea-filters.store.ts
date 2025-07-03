@@ -19,8 +19,8 @@ type TeaFiltersStoreRaw = {
   setServePrice: (servePrice: TeasListFilterServePrice | null) => void,
   setSortBy: (sortBy: TeasListFilterSortBy | null) => void,
   setIsAsc: (isAsc: boolean | null) => void,
-  setIsFavourite: (isFavourite: boolean | null) => void,
-  setIsDeleted: (isDeleted: boolean | null) => void,
+  setIsOnlyFavourite: (isOnlyFavourite: boolean | null) => void,
+  setIsOnlyHidden: (isOnlyHidden: boolean | null) => void,
 
   clear: VoidFunction,
   dispose: VoidFunction,
@@ -81,13 +81,13 @@ function createTeaFiltersStore(): TeaFiltersStore {
       if (isAsc !== null) store.filter.isAsc = isAsc;
       else store.filter.isAsc = DEFAULT_FILTER.isAsc;
     },
-    setIsFavourite(isFavourite) {
-      if (isFavourite !== null) store.filter.isFavourite = isFavourite;
-      else delete store.filter.isFavourite;
+    setIsOnlyFavourite(isFavourite) {
+      if (isFavourite !== null) store.filter.isOnlyFavourite = isFavourite;
+      else delete store.filter.isOnlyFavourite;
     },
-    setIsDeleted(isDeleted) {
-      if (isDeleted !== null) store.filter.isDeleted = isDeleted;
-      else delete store.filter.isDeleted;
+    setIsOnlyHidden(isDeleted) {
+      if (isDeleted !== null) store.filter.isOnlyHidden = isDeleted;
+      else delete store.filter.isOnlyHidden;
     },
 
     clear() {

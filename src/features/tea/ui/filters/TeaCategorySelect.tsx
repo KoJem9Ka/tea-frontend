@@ -38,6 +38,7 @@ export function TeaCategorySelect() {
           <SelectTrigger className='w-full'>
             <SelectValue placeholder='Категория' />
           </SelectTrigger>
+
           <SelectContent>
             <SelectItem value={allKey}>Все категории</SelectItem>
             {selectOptions.map(option => (

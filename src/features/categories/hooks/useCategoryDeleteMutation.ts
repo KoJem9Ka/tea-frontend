@@ -9,6 +9,6 @@ export function useCategoryDeleteMutation() {
     mutationFn: CategoriesApi.delete,
     meta: {
       invalidateQuery: QUERY_KEYS.CATEGORY.LIST(),
-    }
-  })
+    },
+  });
 }

@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { categoriesListQueryOptions } from '@/features/categories';
+import { categoriesQueryOptions } from '@/features/categories';
 import { useBackHeaderButton } from '@/features/header';
 import { tagsQueryOptions } from '@/features/tags';
 import { teaQueryOptions, TeaUpsertForm, useTeaQuery } from '@/features/tea';
@@ -16,7 +16,7 @@ export const Route = createFileRoute('/admin/tea/$id')({
   component: TeaUpdatePageComponent,
   loader: async ({ context: { queryClient }, params }) => Promise.all([
     queryClient.ensureQueryData(teaQueryOptions(params)),
-    queryClient.ensureQueryData(categoriesListQueryOptions()),
+    queryClient.ensureQueryData(categoriesQueryOptions()),
     queryClient.ensureQueryData(tagsQueryOptions()),
   ]).catch((error: unknown) => throwErr(isNotFound(error) ? notFound() : error)),
   pendingComponent: TeaUpdatePageSkeleton,

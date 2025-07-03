@@ -12,8 +12,8 @@ type ColorPickerProps = {
 export function ColorPicker({ value, onChange, className }: ColorPickerProps) {
   return (
     <div className={cn('w-full', className)}>
-      <HexColorPicker 
-        color={value} 
+      <HexColorPicker
+        color={value}
         onChange={onChange}
         style={{ width: '100%', height: '200px' }}
       />

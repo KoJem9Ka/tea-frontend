@@ -7,6 +7,7 @@ import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
 import { Container } from '@/shared/components/Container';
 import { Icon, Iconify } from '@/shared/components/Iconify';
 import { Button } from '@/shared/components/ui/button';
+import { DEFAULT_ERROR_MESSAGE } from '@/shared/constants.ts';
 
 
 export function ErrorRouteComponent(props: ErrorComponentProps) {
@@ -32,7 +33,7 @@ export function ErrorRouteComponent(props: ErrorComponentProps) {
         <p className='text-muted-foreground'>{props.error.message}</p>
       ) : null}
 
-      <p className='my-4'>Попробуйте обновить страницу или повторите позднее</p>
+      <p className='my-4'>{DEFAULT_ERROR_MESSAGE}</p>
 
       <div className='flex flex-wrap justify-center gap-3'>
         {isHome ? null : (

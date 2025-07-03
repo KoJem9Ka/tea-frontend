@@ -4,6 +4,8 @@ import { cn } from '@/shared/lib/utils';
 
 export enum Icon {
   Danger = 'solar--danger-circle-bold',
+  SaveDiskette = 'solar--diskette-bold',
+  ResetUndo = 'solar--undo-left-bold',
 
   HeartEmpty = 'solar--heart-outline',
   HeartFilled = 'solar--heart-bold',
@@ -16,6 +18,7 @@ export enum Icon {
   CircleToCheck = 'line-md--circle-to-confirm-circle-twotone-transition',
 
   Telegram = 'icon-park-outline--telegram',
+  Logout = 'solar--logout-2-bold-duotone',
 
   LoadingSpinner = 'svg-spinners--ring-resize',
 
@@ -29,7 +32,12 @@ export enum Icon {
 
   EditPen = 'solar--pen-2-bold',
   AddPlus = 'solar--add-circle-bold',
-  DeleteTrashCan = 'solar--trash-bin-2-bold'
+  DeleteTrashCan = 'solar--trash-bin-2-bold',
+  MoreActions = 'lucide--more-vertical',
+
+  Tea = 'solar--tea-cup-bold',
+  Tag = 'solar--hashtag-circle-bold',
+  Category = 'solar--notes-bold',
 }
 
 type IconifyProps = ComponentProps<'span'> & {

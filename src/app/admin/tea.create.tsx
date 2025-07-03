@@ -1,5 +1,5 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router';
-import { categoriesListQueryOptions } from '@/features/categories';
+import { categoriesQueryOptions } from '@/features/categories';
 import { useBackHeaderButton } from '@/features/header';
 import { tagsQueryOptions } from '@/features/tags';
 import { TeaUpsertForm } from '@/features/tea';
@@ -10,7 +10,7 @@ import { Container } from '@/shared/components/Container';
 export const Route = createFileRoute('/admin/tea/create')({
   component: RouteComponent,
   loader: async ({ context: { queryClient } }) => Promise.all([
-    queryClient.ensureQueryData(categoriesListQueryOptions()),
+    queryClient.ensureQueryData(categoriesQueryOptions()),
     queryClient.ensureQueryData(tagsQueryOptions()),
   ]),
 });

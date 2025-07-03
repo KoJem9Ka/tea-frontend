@@ -4,4 +4,6 @@ export const ROUTES = {
   ADMIN_TEAS: { to: '/admin/teas' } as const,
   ADMIN_TEA_EDIT: (id: string) => ({ to: '/admin/tea/$id', params: { id } }) as const,
   ADMIN_TEA_NEW: ({ to: '/admin/tea/create' }) as const,
+  ADMIN_CATEGORIES: { to: '/admin/categories' } as const,
+  ADMIN_TAGS: { to: '/admin/tags' } as const,
 };

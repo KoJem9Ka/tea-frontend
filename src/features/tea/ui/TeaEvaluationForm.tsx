@@ -63,7 +63,7 @@ export function TeaEvaluationForm({ tea, className }: TeaEvaluationFormProps) {
             className='w-full space-x-3'
             isLoading={isSubmitting}
           >
-            {isSubmitting && <Iconify icon={Icon.LoadingSpinner} />}
+            {isSubmitting ? <Iconify icon={Icon.LoadingSpinner} /> : <Iconify icon={Icon.SaveDiskette} />}
             {isSubmitting ? 'Сохранение...' : tea.rating ? 'Обновить' : 'Оценить'}
           </Button>
         </form>

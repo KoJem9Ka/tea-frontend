@@ -3,6 +3,7 @@ import { FiltersDropdownStore } from '@/features/tea/filters-dropdown.store';
 import { TeaFiltersStore } from '@/features/tea/tea-filters.store';
 import { TeaFilters } from '@/features/tea/ui/filters/TeaFilters';
 import { useSignals } from '@/shared/backbone/signals';
+import { Icon, Iconify } from '@/shared/components/Iconify';
 import { Button } from '@/shared/components/ui/button';
 import { Drawer, DrawerContent, DrawerFooter, DrawerTitle } from '@/shared/components/ui/drawer';
 import { cn } from '@/shared/lib/utils';
@@ -27,7 +28,7 @@ export function TeaFiltersDrawer() {
               variant='secondary'
               onClick={TeaFiltersStore.clear}
               className='w-full'
-            >Сброс</Button>
+            ><Iconify icon={Icon.ResetUndo} />Сброс</Button>
             <Button
               variant='secondary'
               onClick={FiltersDropdownStore.toggle}

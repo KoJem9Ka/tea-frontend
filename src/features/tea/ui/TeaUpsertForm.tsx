@@ -51,10 +51,7 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
 
   const defaultValues = useMemo(() => merge(cloneDeep(DEFAULT_VALUES), defaultValuesRaw), [defaultValuesRaw]);
 
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: defaultValues,
-  });
+  const form = useForm<FormSchema>({ resolver: zodResolver(FormSchema), defaultValues });
 
   const handleSubmit = form.handleSubmit(async data => {
     const res = await mutation.mutateAsync(data);
@@ -160,7 +157,7 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
 
         <FormSwitch
           control={form.control}
-          name='isDeleted'
+          name='isHidden'
           label='Виден в ассортименте'
           description='Можно временно скрыть без удаления'
           isReverse
@@ -172,7 +169,7 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
             disabled={mutation.isPending || !form.formState.isDirty}
             onClick={() => form.reset()}
             variant='secondary'
-          >Сброс</Button>
+          ><Iconify icon={Icon.ResetUndo} />Сброс</Button>
 
           <Button
             type='submit'
@@ -181,7 +178,7 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
             isLoading={mutation.isPending}
             onClick={handleSubmit}
           >
-            {mutation.isPending ? <Iconify icon={Icon.LoadingSpinner} /> : null}
+            {mutation.isPending ? <Iconify icon={Icon.LoadingSpinner} /> : <Iconify icon={Icon.SaveDiskette} />}
             {mutation.isPending ?
               defaultValues.id ? 'Сохранение...' : 'Создание...' :
               defaultValues.id ? 'Сохранить' : 'Создать'
@@ -200,5 +197,5 @@ const DEFAULT_VALUES: FormSchema = {
   description: '',
   categoryId: '',
   tagIds: [],
-  isDeleted: false,
+  isHidden: false,
 };

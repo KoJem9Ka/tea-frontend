@@ -5,6 +5,7 @@ import { AuthStore } from '@/features/auth';
 import { ThemeTabs } from '@/features/theme';
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES.ts';
+import { Icon, Iconify } from '@/shared/components/Iconify.tsx';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu';
 
 
@@ -27,7 +28,22 @@ export function HeaderUserProfile() {
         {AuthStore.isAdmin ? (<>
           <DropdownMenuItem asChild>
             <Link {...ROUTES.ADMIN_TEA_NEW}>
+              <Iconify icon={Icon.Tea} className='size-4' />
               Новый чай
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <Link {...ROUTES.ADMIN_CATEGORIES}>
+              <Iconify icon={Icon.Category} className='size-4' />
+              Категории
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <Link {...ROUTES.ADMIN_TAGS}>
+              <Iconify icon={Icon.Tag} className='size-4' />
+              Теги
             </Link>
           </DropdownMenuItem>
         </>) : null}
@@ -35,7 +51,10 @@ export function HeaderUserProfile() {
           <ThemeTabs />
         </div>
         {!isTma ? (<>
-          <DropdownMenuItem variant='destructive' onClick={AuthStore.loggedOut}>Выйти</DropdownMenuItem>
+          <DropdownMenuItem variant='destructive' onClick={AuthStore.loggedOut}>
+            <Iconify icon={Icon.Logout} className='size-4' />
+            Выйти
+          </DropdownMenuItem>
         </>) : null}
       </DropdownMenuContent>
     </DropdownMenu>

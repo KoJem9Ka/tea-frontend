@@ -29,7 +29,8 @@ export const TagsApi: TagsApi = {
     const url = 'api/v1/tags';
     const method = 'GET';
     const res = await backendClient(url, { method }).json();
-    return TagsListResBody.parse(res);
+    const data = TagsListResBody.parse(res);
+    return data.sort((a, b) => a.name.localeCompare(b.name));
   },
   upsert: async ({ id, ...body }) => {
     const url = id ? `api/v1/tags/${id}` : 'api/v1/tags';

@@ -2,6 +2,7 @@ import { type ComponentProps, useState } from 'react';
 import { TeaFiltersStore } from '@/features/tea/tea-filters.store';
 import { TeaFilters } from '@/features/tea/ui/filters/TeaFilters.tsx';
 import { useSignals } from '@/shared/backbone/signals.ts';
+import { Icon, Iconify } from '@/shared/components/Iconify.tsx';
 import { Button } from '@/shared/components/ui/button.tsx';
 import {
   Sheet,
@@ -41,7 +42,7 @@ export function TeaFiltersSheet({ className, ...props }: ComponentProps<typeof B
               variant='secondary'
               onClick={TeaFiltersStore.clear}
               className='w-full'
-            >Сброс</Button>
+            ><Iconify icon={Icon.ResetUndo} />Сброс</Button>
 
             <Button
               variant='secondary'

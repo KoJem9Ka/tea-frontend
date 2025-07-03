@@ -1,6 +1,6 @@
+export { ModalTeaDelete } from './ui/ModalTeaDelete.tsx';
 export { TeaCard } from './ui/TeaCard';
 export { TeaCards } from './ui/TeaCards';
-export { TeaDeleteForm } from './ui/TeaDeleteForm';
 export { TeaEvaluationForm } from './ui/TeaEvaluationForm';
 export { TeaFiltersPanel } from './ui/TeaFiltersPanel';
 export { TeaFiltersSheet } from './ui/TeaFiltersSheet';

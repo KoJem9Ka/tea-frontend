@@ -21,6 +21,7 @@
 </Rules>
 
 <Tips>
-* Running application is already running and available by Browser MCP tool, you no need to navigate to localhost etc.
+* Running application is already running, opened in Browser and available by Browser MCP tool, it's not running on localhost and you must not to navigate to it!
 * `get_project_problems` mcp tool is not working and always returns empty problems array. To check problems open target file and use `get_current_file_errors` mcp tool.
+* Don't use `execute_terminal_command` mcp tool, it's not working, use your native terminal tool
 </Tips>

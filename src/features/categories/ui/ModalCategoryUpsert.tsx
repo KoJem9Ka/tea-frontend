@@ -1,10 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type PropsWithChildren, useRef } from 'react';
+import { cloneDeep, merge } from 'lodash-es';
+import { type PropsWithChildren, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod/v4';
 import { CategoryUpsertReqBody } from '@/features/categories/categories.api';
 import { useCategoryUpsertMutation } from '@/features/categories/hooks/useCategoryUpsertMutation';
-import { ResponsiveDialog, type ResponsiveDialogControlRef } from '@/shared/components/ResponsiveDialog';
+import type { Category } from '@/shared/backbone/backend/model/category';
+import { Icon, Iconify } from '@/shared/components/Iconify';
+import { ResponsiveDialog } from '@/shared/components/ResponsiveDialog';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/alert.tsx';
 import { Button } from '@/shared/components/ui/button';
 import {
   FormControl,
@@ -16,24 +20,29 @@ import {
 } from '@/shared/components/ui/form'
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
+import { DEFAULT_ERROR_MESSAGE } from '@/shared/constants.ts';
+import { useAbortController } from '@/shared/hooks/useAbortSignal.ts';
 
 
 type OnSuccessFn = (categoryId: string) => void | PromiseLike<void>;
 
-export function ModalCategoryUpsert({ children, onSuccess }: PropsWithChildren<{ onSuccess?: OnSuccessFn }>) {
-  const ref = useRef<ResponsiveDialogControlRef>(null);
+export function ModalCategoryUpsert({ children, onSuccess, defaultValues }: PropsWithChildren<{
+  onSuccess?: OnSuccessFn;
+  defaultValues?: Category;
+}>) {
+  const [successUpsertSignal, onSuccessUpsert] = useAbortController();
 
   const _onSuccess: OnSuccessFn = async (categoryId) => {
-    ref.current?.close();
+    onSuccessUpsert();
     await onSuccess?.(categoryId);
   };
 
   return (
     <ResponsiveDialog
-      controlRef={ref}
-      title='Новая категория'
+      signal={successUpsertSignal}
+      title={defaultValues ? 'Редактирование категории' : 'Новая категория'}
       triggerSlot={children}
-      formSlot={<CategoryUpsertForm onSuccess={_onSuccess} />}
+      formSlot={<CategoryUpsertForm defaultValues={defaultValues} onSuccess={_onSuccess} />}
     />
   );
 }
@@ -42,28 +51,24 @@ export function ModalCategoryUpsert({ children, onSuccess }: PropsWithChildren<{
 const FormSchema = CategoryUpsertReqBody;
 type FormSchema = z.infer<typeof FormSchema>;
 
-function CategoryUpsertForm({ onSuccess }: {
+function CategoryUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
   onSuccess?: OnSuccessFn;
+  defaultValues?: Category;
 }) {
-  const mutation = useCategoryUpsertMutation();
+  const m = useCategoryUpsertMutation();
 
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: '',
-      description: '',
-    },
-  });
+  const defaultValues = useMemo(() => merge(cloneDeep(DEFAULT_VALUES), defaultValuesRaw), [defaultValuesRaw]);
+
+  const form = useForm<FormSchema>({ resolver: zodResolver(FormSchema), defaultValues });
 
   const handleSubmit = form.handleSubmit(async (data: FormSchema) => {
-    const res = await mutation.mutateAsync(data);
-    form.reset();
+    const res = await m.mutateAsync(data);
     await onSuccess?.(res.id);
-  });
+  }) as VoidFunction;
 
   return (
     <FormProvider {...form}>
-      <form className='space-y-4' onSubmit={handleSubmit as VoidFunction}>
+      <form className='space-y-4'>
         <FormField
           control={form.control}
           name='name'
@@ -95,15 +100,44 @@ function CategoryUpsertForm({ onSuccess }: {
           )}
         />
 
-        <Button
-          type='submit'
-          className='w-full'
-          disabled={mutation.isPending}
-          isLoading={mutation.isPending}
-        >
-          {mutation.isPending ? 'Создание...' : 'Создать'}
-        </Button>
+        {m.isError ? (
+          <Alert variant='destructive'>
+            <Iconify icon={Icon.Danger} />
+            <AlertTitle>Не удалось сохранить категорию</AlertTitle>
+            <AlertDescription>
+              <p>{DEFAULT_ERROR_MESSAGE}</p>
+            </AlertDescription>
+          </Alert>
+        ) : null}
+
+        <div className='grid grid-cols-2 gap-4'>
+          <Button
+            className='w-full'
+            disabled={m.isPending || !form.formState.isDirty}
+            onClick={() => form.reset()}
+            variant='secondary'
+          ><Iconify icon={Icon.ResetUndo} />Сброс</Button>
+
+          <Button
+            type='submit'
+            className='w-full'
+            disabled={!form.formState.isDirty}
+            isLoading={m.isPending}
+            onClick={handleSubmit}
+          >
+            {m.isPending ? <Iconify icon={Icon.LoadingSpinner} /> : <Iconify icon={Icon.SaveDiskette} />}
+            {m.isPending ?
+              defaultValues.id ? 'Сохранение...' : 'Создание...' :
+              defaultValues.id ? 'Сохранить' : 'Создать'
+            }
+          </Button>
+        </div>
       </form>
     </FormProvider>
   );
 }
+
+const DEFAULT_VALUES: FormSchema = {
+  name: '',
+  description: '',
+};
