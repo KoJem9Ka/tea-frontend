@@ -4,19 +4,19 @@ import { useCallback, useEffect, useState } from 'react';
 export function useAbortController(): [AbortSignal, VoidFunction] {
   const [abortController, setAbortController] = useState<AbortController>(() => new AbortController());
 
+  const abort = useCallback(() => {
+    if (!abortController.signal.aborted) abortController.abort();
+  }, [abortController]);
+
   useEffect(() => {
-    if (abortController.signal.aborted) setAbortController(new AbortController());
+    const onAbort = () => setAbortController(new AbortController());
+    abortController.signal.addEventListener('abort', onAbort);
 
     return () => {
-      if (abortController.signal.aborted) return;
-      abortController.abort();
+      abort();
+      abortController.signal.removeEventListener('abort', onAbort);
     };
-  }, [abortController]);
-
-  const abort = useCallback(() => {
-    if (abortController.signal.aborted) return;
-    abortController.abort();
-  }, [abortController]);
+  }, [abortController, abort]);
 
   return [abortController.signal, abort];
 }

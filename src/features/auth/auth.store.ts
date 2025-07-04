@@ -1,4 +1,5 @@
 import { isTMA } from '@telegram-apps/sdk-react';
+import type { DeepSignal } from 'deepsignal/react';
 import { jwtDecode } from 'jwt-decode';
 import type { ReadonlyDeep } from 'type-fest';
 import { type AccessTokenDecoded, backendClientEmitter, BackendClientEvent, backendClientSettings } from '@/shared/backbone/backend/backend-client';
@@ -17,7 +18,7 @@ type AuthStoreRaw = {
   readonly loggedOut: () => void;
   readonly dispose: () => void;
 };
-type AuthStore = ReadonlyDeep<AuthStoreRaw>
+type AuthStore = DeepSignal<ReadonlyDeep<AuthStoreRaw>>
 
 function createAuthStore(): AuthStore {
   const store = deepSignal<AuthStoreRaw>({
@@ -62,8 +63,8 @@ function createAuthStore(): AuthStore {
     backendClientSettings.accessToken = store.user?.accessToken ?? null;
     backendClientSettings.accessTokenDecoded = store.user?.accessTokenDecoded ?? null;
 
-    if (store.user) localStorage.setItem('auth.user', JSON.stringify(store.user));
-    else localStorage.removeItem('auth.user');
+    if (store.user) localStorageSafe.user.set(store.user);
+    else localStorageSafe.user.remove();
   });
 
   return store;

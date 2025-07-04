@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod/v4';
-import { russianErrorMap } from '@/shared/lib/zod-i18n/zod-i18n';
+import { russianErrorMap } from '@/shared/lib/zod/zod-i18n.ts';
 
 
 describe('Zod Russian Localization', () => {

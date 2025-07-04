@@ -89,7 +89,7 @@ function CategoryRow({ category }: { category: Category }) {
 
 function CategoriesPageSkeleton() {
   return (
-    <Container>
+    <Container isSmall>
       <div className='flex justify-between items-center'>
         <Skeleton className='h-8 w-32' />
         <Skeleton className='size-9' />

@@ -31,7 +31,7 @@ function TeaUpdatePageComponent() {
   if (teaQuery.isError) return <ErrorRouteComponent error={teaQuery.error} reset={teaQuery.refetch as VoidFunction} />;
 
   return (
-    <Container className='sm:w-auto sm:min-w-md'>
+    <Container isSmall>
       <TeaUpsertForm defaultValues={teaToInput(teaQuery.data)} onSuccess={goBack} />
     </Container>
   );
@@ -39,7 +39,7 @@ function TeaUpdatePageComponent() {
 
 function TeaUpdatePageSkeleton() {
   return (
-    <Container className='sm:w-auto sm:min-w-md'>
+    <Container isSmall>
       <div className='space-y-2'>
         <Skeleton className='w-1/2 h-5' />
         <Skeleton className='w-1/3 h-4' />

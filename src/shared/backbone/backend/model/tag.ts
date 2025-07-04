@@ -4,8 +4,8 @@ import { z } from 'zod/v4';
 export type Tag = z.infer<typeof Tag>;
 export const Tag = z.object({
   id: z.uuid(),
-  name: z.string().nonempty({ error: 'Обязательное поле' }),
-  color: z.string().nonempty({ error: 'Обязательное поле' }).regex(/^#[0-9A-Fa-f]{6}$/, { error: 'Неверный формат цвета' }),
+  name: z.string().trim().nonempty({ error: 'Обязательное поле' }),
+  color: z.string().trim().nonempty({ error: 'Обязательное поле' }).regex(/^#[0-9A-Fa-f]{6}$/, { error: 'Неверный формат цвета' }),
 });
 
 export type TagUpsert = z.infer<typeof TagUpsert>;

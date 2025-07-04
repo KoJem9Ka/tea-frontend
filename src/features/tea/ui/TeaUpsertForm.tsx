@@ -30,10 +30,13 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/shared/components/ui/select'
+import { getFieldPlaceholder } from '@/shared/lib/zod/field-utils';
 
 
 const FormSchema = TeaUpsert;
 type FormSchema = z.infer<typeof FormSchema>;
+
+
 
 export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
   onSuccess?: (teaId: string) => void | PromiseLike<void>;
@@ -65,14 +68,14 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
           control={form.control}
           name='name'
           label='Название'
-          placeholder='Название...'
+          placeholder={getFieldPlaceholder(FormSchema, 'name')}
         />
 
         <FormTextarea
           control={form.control}
           name='description'
           label='Описание'
-          placeholder='Описание...'
+          placeholder={getFieldPlaceholder(FormSchema, 'description')}
         />
 
         <FormCurrencyRubblesInput
@@ -111,7 +114,7 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
                 <ModalCategoryUpsert
                   onSuccess={categoryId => {
                     // FIXME: idk why it immediately resets without scheduling on next macro task??? (but tags select works without it)
-                    setTimeout(() => form.setValue('categoryId', categoryId));
+                    setTimeout(() => form.setValue('categoryId', categoryId, { shouldDirty: true }));
                   }}
                 >
                   <Button size='icon' variant='outline'>
@@ -143,7 +146,7 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
                   />
                 </FormControl>
 
-                <ModalTagUpsert onSuccess={tagId => form.setValue('tagIds', (field.value || []).concat(tagId))}>
+                <ModalTagUpsert onSuccess={tagId => form.setValue('tagIds', (field.value || []).concat(tagId), { shouldDirty: true })}>
                   <Button size='icon' variant='outline'>
                     <Iconify icon={Icon.AddPlus} />
                   </Button>

@@ -111,8 +111,8 @@ function createTeaFiltersStore(): TeaFiltersStore {
     return () => clearTimeout(timeout);
   });
 
-  const dispose2 = effect(() => {
-    if (AuthStore.isAuthorized || store.isFilterEmpty) return;
+  const dispose2 = AuthStore.$isAuthorized!.subscribe(() => {
+    if (store.isFilterEmpty) return;
     store.clear();
   });
 

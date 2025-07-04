@@ -6,22 +6,15 @@ import type { z } from 'zod/v4';
 import { CategoryUpsertReqBody } from '@/features/categories/categories.api';
 import { useCategoryUpsertMutation } from '@/features/categories/hooks/useCategoryUpsertMutation';
 import type { Category } from '@/shared/backbone/backend/model/category';
+import { FormTextInput } from '@/shared/components/form/FormTextInput.tsx';
 import { Icon, Iconify } from '@/shared/components/Iconify';
 import { ResponsiveDialog } from '@/shared/components/ResponsiveDialog';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/alert.tsx';
 import { Button } from '@/shared/components/ui/button';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormProvider
-} from '@/shared/components/ui/form'
-import { Input } from '@/shared/components/ui/input';
-import { Textarea } from '@/shared/components/ui/textarea';
+import { FormProvider } from '@/shared/components/ui/form';
 import { DEFAULT_ERROR_MESSAGE } from '@/shared/constants.ts';
 import { useAbortController } from '@/shared/hooks/useAbortSignal.ts';
+import { getFieldPlaceholder } from '@/shared/lib/zod/field-utils.ts';
 
 
 type OnSuccessFn = (categoryId: string) => void | PromiseLike<void>;
@@ -69,35 +62,18 @@ function CategoryUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
   return (
     <FormProvider {...form}>
       <form className='space-y-4'>
-        <FormField
+        <FormTextInput
           control={form.control}
           name='name'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Название</FormLabel>
-              <FormControl>
-                <Input placeholder='Название...' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label='Название'
+          placeholder={getFieldPlaceholder(FormSchema, 'name')}
         />
 
-        <FormField
+        <FormTextInput
           control={form.control}
           name='description'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Описание</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder='Описание...'
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label='Описание'
+          placeholder={getFieldPlaceholder(FormSchema, 'description')}
         />
 
         {m.isError ? (

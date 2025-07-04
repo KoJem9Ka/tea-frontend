@@ -36,7 +36,7 @@ function RouteComponent() {
   if (tagsQuery.isPending || tagsQuery.isPlaceholderData) return <TagsPageSkeleton />;
 
   return (
-    <Container>
+    <Container isSmall>
       <div className='flex justify-between items-center'>
         <h1 className='text-2xl font-bold'>Теги</h1>
 
@@ -89,7 +89,7 @@ function TagRow({ tag }: { tag: Tag }) {
 
 function TagsPageSkeleton() {
   return (
-    <Container>
+    <Container isSmall>
       <div className='flex justify-between items-center'>
         <Skeleton className='h-8 w-32' />
         <Skeleton className='size-9' />

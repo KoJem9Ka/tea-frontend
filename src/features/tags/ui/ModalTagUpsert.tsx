@@ -21,6 +21,7 @@ import {
   FormProvider
 } from '@/shared/components/ui/form'
 import { useAbortController } from '@/shared/hooks/useAbortSignal.ts';
+import { getFieldPlaceholder } from '@/shared/lib/zod/field-utils.ts';
 
 
 type OnSuccessFn = (tagId: string) => void | PromiseLike<void>;
@@ -85,7 +86,7 @@ function TagUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
           control={form.control}
           name='name'
           label='Название'
-          placeholder='Название тега...'
+          placeholder={getFieldPlaceholder(FormSchema, 'name')}
         />
 
         <FormField

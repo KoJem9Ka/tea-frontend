@@ -11,6 +11,8 @@ type ThemeStore = ReadonlyDeep<{
   dispose: () => void;
 }>
 
+const DEFAULT_THEME: Theme = 'system';
+
 function createThemeStore(): ThemeStore {
   const abortController = new AbortController();
   const matchMedia = window.matchMedia('(prefers-color-scheme: dark)');
@@ -18,7 +20,7 @@ function createThemeStore(): ThemeStore {
   matchMedia.addEventListener('change', (e) => void (_isDarkByMediaMatch.value = e.matches), abortController);
 
   const store = deepSignal({
-    theme: localStorageSafe.theme.getOr('system'),
+    theme: localStorageSafe.theme.getOr(DEFAULT_THEME),
     get isDark(): boolean {
       return this.theme === 'system'
         ? _isDarkByMediaMatch.value
@@ -36,7 +38,9 @@ function createThemeStore(): ThemeStore {
   }, 'ThemeStore');
 
   const themeEffectUnsub = effect(() => {
-    localStorageSafe.theme.set(store.theme);
+    if (store.theme === DEFAULT_THEME) localStorageSafe.theme.remove();
+    else localStorageSafe.theme.set(store.theme);
+
     document.body.classList.toggle('dark', store.isDark);
     // document.body.classList.toggle('light', !store.isDark);
   });
@@ -45,3 +49,4 @@ function createThemeStore(): ThemeStore {
 }
 
 export const ThemeStore = createThemeStore();
+

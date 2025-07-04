@@ -9,7 +9,7 @@ import { Container } from '@/shared/components/Container';
 
 export const Route = createFileRoute('/admin/tea/create')({
   component: RouteComponent,
-  loader: async ({ context: { queryClient } }) => Promise.all([
+  loader: ({ context: { queryClient } }) => Promise.all([
     queryClient.ensureQueryData(categoriesQueryOptions()),
     queryClient.ensureQueryData(tagsQueryOptions()),
   ]),
@@ -22,7 +22,7 @@ function RouteComponent() {
   const openCreatedTea = (teaId: string) => router.navigate(ROUTES.TEA_DETAILS(teaId));
 
   return (
-    <Container className='sm:w-auto sm:min-w-md'>
+    <Container isSmall>
       <TeaUpsertForm onSuccess={openCreatedTea} />
     </Container>
   );

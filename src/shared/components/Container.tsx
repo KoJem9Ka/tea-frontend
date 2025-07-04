@@ -3,6 +3,7 @@ import { cn } from '@/shared/lib/utils';
 
 
 type ContainerProps = React.ComponentProps<'div'> & {
+  isSmall?: boolean,
   asChild?: boolean,
   isCenter?: boolean,
   isCenterX?: boolean,
@@ -10,7 +11,7 @@ type ContainerProps = React.ComponentProps<'div'> & {
 }
 
 export function Container({
-  isCenter, isCenterX, isCenterY,
+  isSmall, isCenter, isCenterX, isCenterY,
   asChild, className, ...props
 }: ContainerProps) {
   const Comp = asChild ? Slot.Root : 'div';
@@ -22,6 +23,7 @@ export function Container({
         'w-full max-w-7xl mx-auto',
         'p-4 gap-3',
         'min-h-0',
+        isSmall && 'max-w-md',
         (isCenter || isCenterX) && 'items-center',
         (isCenter || isCenterY) && 'justify-center',
         className,

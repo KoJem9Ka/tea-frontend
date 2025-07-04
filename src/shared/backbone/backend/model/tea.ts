@@ -5,10 +5,10 @@ import { Tag } from '@/shared/backbone/backend/model/tag';
 export type Tea = z.infer<typeof Tea>;
 export const Tea = z.object({
   id: z.uuid(),
-  name: z.string().nonempty({ error: 'Обязательное поле' }),
+  name: z.string().trim().nonempty({ error: 'Обязательное поле' }),
   servePrice: z.number().positive({ error: issue => Number(issue.input) < 0 ? 'Должно быть положительным' : 'Обязательное поле' }),
   weightPrice: z.number().positive({ error: issue => Number(issue.input) < 0 ? 'Должно быть положительным' : 'Обязательное поле' }),
-  description: z.string().nonempty({ error: 'Обязательное поле' }).optional(),
+  description: z.string().trim().transform(val => val || undefined).nullish(),
   categoryId: z.uuid({ error: issue => !issue.input ? 'Обязательное поле' : 'Неверный формат' }),
   tags: z.array(Tag).optional(),
   isHidden: z.boolean().optional(),

@@ -4,8 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3000",
-    "build": "rm -rf dist && concurrently --kill-others-on-fail -n lint,typecheck,build -c magenta,cyan,white \"bun lint\" \"bun typecheck\" \"vite build\"",
-    "preview": "vite preview",
+    "build": "concurrently --kill-others-on-fail -n lint,typecheck,build -c magenta,cyan,white \"bun lint\" \"bun typecheck\" \"bun build:skipchecks\"",
+    "build:skipchecks": "rm -rf dist && vite build",
+    "preview": "vite preview --port 3000",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --cache --report-unused-disable-directives --max-warnings 0",

@@ -70,7 +70,7 @@ function TeaPage({ tea, category, goBack }: TeaPageProps) {
   useSignals();
 
   return (
-    <Container className='sm:w-auto'>
+    <Container isSmall>
       <Card>
         <CardHeader>
           <CardTitle className='text-2xl'>{tea.name}</CardTitle>
@@ -135,7 +135,7 @@ function TeaPage({ tea, category, goBack }: TeaPageProps) {
 
 function TeaPageSkeleton() {
   return (
-    <Container isCenterX>
+    <Container isSmall>
       <Card className='w-lg max-w-full'>
         <CardHeader>
           <Skeleton className='w-1/2 h-5' />

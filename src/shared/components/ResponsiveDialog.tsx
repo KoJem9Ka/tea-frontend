@@ -44,7 +44,8 @@ export function ResponsiveDialog({ title, triggerSlot, formSlot, controlRef, sig
   }), []);
 
   useEffect(() => {
-    if (!signal || !isOpen || signal.aborted) return;
+    if (!signal || !isOpen) return;
+    if (signal.aborted) return setIsOpen(false);
     const handler = () => setIsOpen(false);
     signal.addEventListener('abort', handler);
     return () => signal.removeEventListener('abort', handler);
