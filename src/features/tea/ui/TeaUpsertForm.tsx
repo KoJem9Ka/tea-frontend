@@ -81,13 +81,15 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
         <FormCurrencyRubblesInput
           control={form.control}
           name='servePrice'
-          label='Стоимость подачи'
+          label='Стоимость чаепития'
+          placeholder={getFieldPlaceholder(FormSchema, 'servePrice')}
         />
 
         <FormCurrencyRubblesInput
           control={form.control}
           name='weightPrice'
           label='Стоимость за 100 г.'
+          placeholder={getFieldPlaceholder(FormSchema, 'weightPrice')}
         />
 
         <FormField

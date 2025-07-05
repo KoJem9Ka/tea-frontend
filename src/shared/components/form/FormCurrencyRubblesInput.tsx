@@ -48,7 +48,6 @@ const imaskConfig = {
   unmask: true,
   mask: 'num ₽',
   lazy: false,
-  normalizeZeros: true,
   blocks: {
     num: {
       mask: Number,

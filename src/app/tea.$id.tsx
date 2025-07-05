@@ -3,11 +3,13 @@ import { AuthStore, TelegramLoginCustomButton } from '@/features/auth';
 import { categoriesQueryOptions, useCategoryQuery } from '@/features/categories';
 import { useBackHeaderButton } from '@/features/header';
 import { ModalTeaDelete, TeaEvaluationForm, teaQueryOptions, useTeaQuery } from '@/features/tea';
+import { TeaFavouriteButton } from '@/features/tea/ui/TeaFavouriteButton.tsx';
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
 import { Container } from '@/shared/components/Container';
 import { Icon, Iconify } from '@/shared/components/Iconify';
 import { ErrorRouteComponent } from '@/shared/components/routes/ErrorRouteComponent';
+import { Stars } from '@/shared/components/Stars';
 import { TeaTag } from '@/shared/components/TeaTag';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -29,7 +31,6 @@ export const Route = createFileRoute('/tea/$id')({
   loader: async ({ context: { queryClient }, params }) => {
     await Promise.all([
       queryClient.ensureQueryData(categoriesQueryOptions()),
-      // FIXME: backend overload, because of "Preload: 'viewport'" on router config
       queryClient.ensureQueryData(teaQueryOptions(params)),
     ]).catch((error: unknown) => throwErr(isNotFound(error) ? notFound() : error));
   },
@@ -76,6 +77,7 @@ function TeaPage({ tea, category, goBack }: TeaPageProps) {
           <CardTitle className='text-2xl'>{tea.name}</CardTitle>
           <p className='text-lg text-muted-foreground'>{category.name}</p>
         </CardHeader>
+
         <CardContent className='space-y-2'>
           {tea.description && (
             <p>{tea.description}</p>
@@ -86,18 +88,31 @@ function TeaPage({ tea, category, goBack }: TeaPageProps) {
               {tea.tags.map(tag => <TeaTag key={tag.id} {...tag} />)}
             </div>
           )}
+
+          {typeof tea.averageRating === 'number' && (
+            <div className='flex flex-col'>
+              <p className='text-muted-foreground'>
+                Средний рейтинг ({tea.averageRating}/10)
+              </p>
+              <Stars value={tea.averageRating} />
+            </div>
+          )}
         </CardContent>
 
-        <CardFooter className='flex-col items-start'>
-          <div>
-            <strong className='text-xl'>{formatterCurrencyRU.format(tea.servePrice)}</strong>
-            <span className='text-muted-foreground'>{' / порция'}</span>
+        <CardFooter className='justify-between items-end'>
+          <div className='flex-col items-start'>
+            <div>
+              <strong className='text-xl'>{formatterCurrencyRU.format(tea.servePrice)}</strong>
+              <span className='text-muted-foreground'>{' / чаепитие'}</span>
+            </div>
+
+            <div>
+              <strong className='text-xl'>{formatterCurrencyRU.format(tea.weightPrice)}</strong>
+              <span className='text-muted-foreground'>{' / 100 г.'}</span>
+            </div>
           </div>
 
-          <div>
-            <strong className='text-xl'>{formatterCurrencyRU.format(tea.weightPrice)}</strong>
-            <span className='text-muted-foreground'>{' / 100 г.'}</span>
-          </div>
+          <TeaFavouriteButton id={tea.id} isFavourite={tea.isFavourite} />
         </CardFooter>
       </Card>
 

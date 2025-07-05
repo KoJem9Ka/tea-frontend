@@ -1,4 +1,6 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
+import { teaInfiniteQueryOptions } from '@/features/tea/hooks/useTeaInfiniteQuery';
+import { TeaFiltersStore } from '@/features/tea/tea-filters.store';
 import { TeaApi, type TeaOneReqParams } from '@/features/tea/tea.api';
 import { useSignals } from '@/shared/backbone/signals';
 import { queryClient } from '@/shared/backbone/tanstack-query/query-client';
@@ -16,12 +18,11 @@ export function teaQueryOptions(args: TeaOneReqParams) {
   return queryOptions({
     ...DEFAULT_OPTIONS,
     queryKey: QUERY_KEYS.TEA.ONE(args),
-    // data form infinite query is not full, can't use it
-    // initialData: () => teaInfiniteQueryOptions.getData(TeaFiltersStore.filter)
-    //   ?.pages.flatMap(page => page.items)
-    //   .find(tea => tea.id === args.id),
-    // initialDataUpdatedAt: () => teaInfiniteQueryOptions.getState(TeaFiltersStore.filter)
-    //   ?.dataUpdatedAt,
+    initialData: () => teaInfiniteQueryOptions.getData(TeaFiltersStore.filterDebounced)
+      ?.pages.flatMap(page => page.items)
+      .find(tea => tea.id === args.id),
+    initialDataUpdatedAt: () => teaInfiniteQueryOptions.getState(TeaFiltersStore.filterDebounced)
+      ?.dataUpdatedAt,
   });
 }
 

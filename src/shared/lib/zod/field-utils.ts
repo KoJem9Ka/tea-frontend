@@ -51,7 +51,7 @@ export function getFieldPlaceholder<T extends z.ZodRawShape>(
 ): string {
   const {
     requiredText = 'Обязательное',
-    optionalText = 'Не обязательное',
+    optionalText = 'Необязательное',
     format = 'suffix',
   } = options;
 

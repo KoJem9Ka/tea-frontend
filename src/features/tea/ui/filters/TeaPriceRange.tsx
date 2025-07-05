@@ -1,3 +1,4 @@
+import { isEqual } from 'lodash-es';
 import { minMaxPricesQuery, useMinMaxPricesQuery } from '@/features/tea/hooks/useMinMaxPricesQuery';
 import { TeaFiltersStore } from '@/features/tea/tea-filters.store';
 import { useSignals } from '@/shared/backbone/signals';
@@ -20,7 +21,10 @@ export function TeaPriceRange() {
     value => formatterCurrencyRU.format(value),
   ) as [string, string];
 
-  const onChange = ([min, max]: [number, number]) => TeaFiltersStore.setServePrice({ min, max });
+  const onChange = ([min, max]: [number, number]) => {
+    const isDefault = isEqual([min, max], sliderDefaultValue);
+    TeaFiltersStore.setServePrice(isDefault ? null : { min, max });
+  };
 
   return (
     <>
