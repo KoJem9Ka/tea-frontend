@@ -2,8 +2,13 @@ import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { AuthStore, TelegramLoginCustomButton } from '@/features/auth';
 import { categoriesQueryOptions, useCategoryQuery } from '@/features/categories';
 import { useBackHeaderButton } from '@/features/header';
-import { ModalTeaDelete, TeaEvaluationForm, teaQueryOptions, useTeaQuery } from '@/features/tea';
-import { TeaFavouriteButton } from '@/features/tea/ui/TeaFavouriteButton.tsx';
+import {
+  ModalTeaDelete,
+  TeaEvaluationForm,
+  TeaFavouriteButton,
+  teaQueryOptions,
+  useTeaQuery
+} from '@/features/tea'
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
 import { Container } from '@/shared/components/Container';

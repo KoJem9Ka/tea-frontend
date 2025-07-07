@@ -2,6 +2,7 @@ export { ModalTeaDelete } from './ui/ModalTeaDelete.tsx';
 export { TeaCard } from './ui/TeaCard';
 export { TeaCards } from './ui/TeaCards';
 export { TeaEvaluationForm } from './ui/TeaEvaluationForm';
+export { TeaFavouriteButton } from './ui/TeaFavouriteButton';
 export { TeaFiltersPanel } from './ui/TeaFiltersPanel';
 export { TeaFiltersSheet } from './ui/TeaFiltersSheet';
 export { TeaFiltersStore } from './tea-filters.store';

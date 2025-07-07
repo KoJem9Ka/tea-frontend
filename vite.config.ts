@@ -1,8 +1,9 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, type PluginOption } from 'vite';
 import viteReact from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import { resolve } from 'node:path';
+import runtimeEnv from 'vite-plugin-runtime-env';
 
 
 // https://vitejs.dev/config/
@@ -14,8 +15,6 @@ export default defineConfig(({ mode }) => {
 
   const errors: string[] = [];
   if (isDev && !backendOrigin) errors.push('BACKEND_ORIGIN must be provided for DEV environment');
-  if (!env.VITE_TELEGRAM_BOT_ID) errors.push('VITE_TELEGRAM_BOT_ID must be provided');
-  if (!env.VITE_TELEGRAM_BOT_NAME) errors.push('VITE_TELEGRAM_BOT_NAME must be provided');
   if (errors.length) throw new Error(`ENV incorrect:\n${errors.join('\n')}`);
 
   return {
@@ -26,6 +25,8 @@ export default defineConfig(({ mode }) => {
       }),
       viteReact(),
       tailwindcss(),
+      runtimeEnv(),
+      renameDistPlugin('index.html', 'index.html.template'),
     ],
     resolve: {
       alias: {
@@ -57,3 +58,17 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
+
+
+const renameDistPlugin = (oldName: string, newName: string): PluginOption => {
+  if (!newName) return;
+  return {
+    name: 'renameDist',
+    enforce: 'post',
+    generateBundle(_, bundle) {
+      const indexHtml = bundle[oldName]
+      if (!indexHtml) throw new Error(`Can't rename file: ${oldName}`);
+      indexHtml.fileName = newName
+    },
+  }
+}
