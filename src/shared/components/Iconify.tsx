@@ -3,19 +3,21 @@ import { cn } from '@/shared/lib/utils';
 
 
 export enum Icon {
-  Danger = 'solar--danger-circle-bold',
-  SaveDiskette = 'solar--diskette-bold',
-  ResetUndo = 'solar--undo-left-bold',
+  Danger = 'fluent--error-circle-24-regular',
+  SaveDiskette = 'fluent--save-24-regular',
+  ResetUndo = 'fluent--arrow-undo-24-regular',
 
   HeartEmpty = 'solar--heart-outline',
   HeartFilled = 'solar--heart-bold',
+  // HeartEmpty = 'fluent--heart-24-regular',
+  // HeartFilled = 'fluent--heart-24-filled',
 
-  StarEmpty = 'line-md--star',
-  StarFilled = 'line-md--star-filled',
-  StarFilledHalf = 'line-md--star-filled-half',
+  StarEmpty = 'fluent--star-24-regular',
+  StarFilled = 'fluent--star-24-filled',
+  StarFilledHalf = 'fluent--star-half-24-regular',
 
-  CheckToCircle = 'line-md--confirm-circle-twotone-to-circle-transition',
-  CircleToCheck = 'line-md--circle-to-confirm-circle-twotone-transition',
+  CheckToCircle = 'fluent--circle-24-regular',
+  CircleToCheck = 'fluent--checkmark-circle-24-regular',
 
   Telegram = 'icon-park-outline--telegram',
   Logout = 'solar--logout-2-bold-duotone',
@@ -28,16 +30,17 @@ export enum Icon {
   ThemeLight = 'line-md--sunny-filled',
   ThemeLightToDark = 'line-md--sunny-filled-loop-to-moon-filled-transition',
 
-  ArrowLeft = 'solar--alt-arrow-left-linear',
+  ArrowLeft = 'fluent--ios-arrow-left-24-regular',
 
-  EditPen = 'solar--pen-2-bold',
-  AddPlus = 'solar--add-circle-bold',
-  DeleteTrashCan = 'solar--trash-bin-2-bold',
+  EditPen = 'fluent--pen-24-regular',
+  AddPlus = 'fluent--add-24-regular',
+  DeleteTrashCan = 'fluent--delete-24-regular',
   MoreActions = 'lucide--more-vertical',
 
   Tea = 'solar--tea-cup-bold',
   Tag = 'solar--hashtag-circle-bold',
   Category = 'solar--notes-bold',
+  Weight = 'solar--weigher-bold',
 }
 
 type IconifyProps = ComponentProps<'span'> & {

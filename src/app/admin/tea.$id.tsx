@@ -3,7 +3,7 @@ import { categoriesQueryOptions } from '@/features/categories';
 import { useBackHeaderButton } from '@/features/header';
 import { tagsQueryOptions } from '@/features/tags';
 import { teaQueryOptions, TeaUpsertForm, useTeaQuery } from '@/features/tea';
-import { teaToInput } from '@/shared/backbone/backend/model/tea';
+import { teaToTeaUpsert } from '@/shared/backbone/backend/model/tea';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
 import { Container } from '@/shared/components/Container';
 import { ErrorRouteComponent } from '@/shared/components/routes/ErrorRouteComponent';
@@ -32,7 +32,7 @@ function TeaUpdatePageComponent() {
 
   return (
     <Container isSmall>
-      <TeaUpsertForm defaultValues={teaToInput(teaQuery.data)} onSuccess={goBack} />
+      <TeaUpsertForm defaultValues={teaToTeaUpsert(teaQuery.data)} onSuccess={goBack} />
     </Container>
   );
 }

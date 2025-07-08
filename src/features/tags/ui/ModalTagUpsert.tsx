@@ -22,9 +22,10 @@ import {
 } from '@/shared/components/ui/form'
 import { useAbortController } from '@/shared/hooks/useAbortSignal.ts';
 import { getFieldPlaceholder } from '@/shared/lib/zod/field-utils.ts';
+import type { MaybePromise } from '@/shared/types/types.ts';
 
 
-type OnSuccessFn = (tagId: string) => void | PromiseLike<void>;
+type OnSuccessFn = (tagId: string) => MaybePromise;
 
 export function ModalTagUpsert({
   children,

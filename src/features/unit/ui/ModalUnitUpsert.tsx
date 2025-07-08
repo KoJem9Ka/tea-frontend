@@ -1,55 +1,60 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cloneDeep, merge } from 'lodash-es';
 import { type PropsWithChildren, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import type { z } from 'zod/v4';
-import { CategoryUpsertReqBody } from '@/features/categories/categories.api';
-import { useCategoryUpsertMutation } from '@/features/categories/hooks/useCategoryUpsertMutation';
-import type { Category } from '@/shared/backbone/backend/model/category';
-import { FormTextInput } from '@/shared/components/form/FormTextInput.tsx';
+import { useForm, useFormState, useWatch } from 'react-hook-form';
+import { type z } from 'zod/v4';
+import { useUnitUpsertMutation } from '@/features/unit/hooks/useUnitUpsertMutation';
+import { UnitUpsertReqArgs } from '@/features/unit/unit.api';
+import { type Unit, unitPrettyPrint, WeightUnitEnum, weightUnitPrettyPrintMap } from '@/shared/backbone/backend/model/unit';
+import { FormNumberInput } from '@/shared/components/form/FormNumberInput.tsx';
+import { FormSelect } from '@/shared/components/form/FormSelect.tsx';
+import { FormSwitch } from '@/shared/components/form/FormSwitch.tsx';
 import { Icon, Iconify } from '@/shared/components/Iconify';
 import { ResponsiveDialog } from '@/shared/components/ResponsiveDialog';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/alert.tsx';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/alert';
 import { Button } from '@/shared/components/ui/button';
 import { FormProvider } from '@/shared/components/ui/form';
-import { DEFAULT_ERROR_MESSAGE } from '@/shared/constants.ts';
+import { DEFAULT_ERROR_MESSAGE } from '@/shared/constants';
 import { useAbortController } from '@/shared/hooks/useAbortSignal.ts';
-import { getFieldPlaceholder } from '@/shared/lib/zod/field-utils.ts';
 import type { MaybePromise } from '@/shared/types/types.ts';
 
 
-type OnSuccessFn = (categoryId: string) => MaybePromise;
+type OnSuccessFn = (unitId: string) => MaybePromise;
 
-export function ModalCategoryUpsert({ children, onSuccess, defaultValues }: PropsWithChildren<{
+export function ModalUnitUpsert({
+  children,
+  onSuccess,
+  defaultValues,
+}: PropsWithChildren<{
   onSuccess?: OnSuccessFn;
-  defaultValues?: Category;
+  defaultValues?: Unit;
 }>) {
   const [successUpsertSignal, onSuccessUpsert] = useAbortController();
 
-  const _onSuccess: OnSuccessFn = async (categoryId) => {
+  const _onSuccess: OnSuccessFn = async (unitId) => {
     onSuccessUpsert();
-    await onSuccess?.(categoryId);
+    await onSuccess?.(unitId);
   };
 
   return (
     <ResponsiveDialog
       signal={successUpsertSignal}
-      title={defaultValues ? 'Редактирование категории' : 'Новая категория'}
+      title={defaultValues ? 'Редактирование ед. изм.' : 'Новая ед. изм.'}
       triggerSlot={children}
-      formSlot={<CategoryUpsertForm defaultValues={defaultValues} onSuccess={_onSuccess} />}
+      formSlot={<UnitUpsertForm defaultValues={defaultValues} onSuccess={_onSuccess} />}
     />
   );
 }
 
 
-const FormSchema = CategoryUpsertReqBody;
+const FormSchema = UnitUpsertReqArgs;
 type FormSchema = z.infer<typeof FormSchema>;
 
-function CategoryUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
+function UnitUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
   onSuccess?: OnSuccessFn;
-  defaultValues?: Category;
+  defaultValues?: Unit;
 }) {
-  const m = useCategoryUpsertMutation();
+  const m = useUnitUpsertMutation();
 
   const defaultValues = useMemo(() => merge(cloneDeep(DEFAULT_VALUES), defaultValuesRaw), [defaultValuesRaw]);
 
@@ -63,24 +68,33 @@ function CategoryUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
   return (
     <FormProvider {...form}>
       <form className='space-y-4'>
-        <FormTextInput
-          control={form.control}
-          name='name'
-          label='Название'
-          placeholder={getFieldPlaceholder(FormSchema, 'name')}
-        />
+        <UnitVisualized control={form.control} />
 
-        <FormTextInput
+        <div className='grid grid-cols-[1fr_auto] items-start gap-3'>
+          <FormNumberInput
+            control={form.control}
+            name='value'
+            label='Вес'
+          />
+
+          <FormSelect
+            control={form.control}
+            name='weightUnit'
+            label='Ед. изм.'
+            options={Object.values(WeightUnitEnum).map(v => ({ label: weightUnitPrettyPrintMap[v], value: v }))}
+          />
+        </div>
+
+        <FormSwitch
           control={form.control}
-          name='description'
-          label='Описание'
-          placeholder={getFieldPlaceholder(FormSchema, 'description')}
+          name='isApiece'
+          label='Поштучно'
         />
 
         {m.isError ? (
           <Alert variant='destructive'>
             <Iconify icon={Icon.Danger} />
-            <AlertTitle>Не удалось сохранить категорию</AlertTitle>
+            <AlertTitle>Не удалось сохранить ед. изм.</AlertTitle>
             <AlertDescription>
               <p>{DEFAULT_ERROR_MESSAGE}</p>
             </AlertDescription>
@@ -115,6 +129,22 @@ function CategoryUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
 }
 
 const DEFAULT_VALUES: FormSchema = {
-  name: '',
-  description: '',
+  isApiece: false,
+  weightUnit: WeightUnitEnum.G,
+  value: 0,
 };
+
+function UnitVisualized({ control }: {
+  control: ReturnType<typeof useForm<FormSchema>>['control'];
+}) {
+  const unit = useWatch({ control }) as UnitUpsertReqArgs;
+  const state = useFormState({ control });
+
+  return (
+    <div className='text-center'>
+      {state.isValid ? unitPrettyPrint(unit)
+        : state.isDirty ? 'Неверные данные'
+          : 'Заполните форму'}
+    </div>
+  );
+}

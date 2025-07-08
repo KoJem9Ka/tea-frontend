@@ -1,5 +1,6 @@
 import { isEqual } from 'lodash-es';
-import { minMaxPricesQuery, useMinMaxPricesQuery } from '@/features/tea/hooks/useMinMaxPricesQuery';
+import { useRef } from 'react';
+import { useTeaMinMaxPricesQuery } from '@/features/tea/hooks/useTeaInfiniteQuery.ts';
 import { TeaFiltersStore } from '@/features/tea/tea-filters.store';
 import { useSignals } from '@/shared/backbone/signals';
 import { Skeleton } from '@/shared/components/ui/skeleton';
@@ -11,9 +12,11 @@ import { formatterCurrencyRU } from '@/shared/lib/independent/formatter-currency
 // TODO: catch query error
 export function TeaPriceRange() {
   useSignals();
-  const pricesQuery = useMinMaxPricesQuery();
-  const response = pricesQuery.data || minMaxPricesQuery.placeholderData;
-  const sliderDefaultValue = [response.minServePrice, response.maxServePrice] as const;
+  const cachedData = useRef<NonNullable<ReturnType<typeof useTeaMinMaxPricesQuery>['data']>>(useTeaMinMaxPricesQuery.placeholderData);
+  const pricesQuery = useTeaMinMaxPricesQuery();
+  if (pricesQuery.data) cachedData.current = pricesQuery.data;
+  const values = pricesQuery.data || cachedData.current;
+  const sliderDefaultValue = [values.minServePrice, values.maxServePrice] as const;
   const sliderValue = TeaFiltersStore.filter.servePrice
     ? [TeaFiltersStore.filter.servePrice.min, TeaFiltersStore.filter.servePrice.max] as const
     : sliderDefaultValue;
@@ -32,8 +35,10 @@ export function TeaPriceRange() {
       <div className='pt-2'>
         {pricesQuery.isPlaceholderData ? <Skeleton className='h-2 w-full' /> : (
           <Slider
-            min={response.minServePrice}
-            max={response.maxServePrice}
+            // TODO: reset when disabled
+            disabled={values.minServePrice === values.maxServePrice}
+            min={values.minServePrice}
+            max={values.maxServePrice}
             step={1}
             onValueChange={onChange}
             value={sliderValue}

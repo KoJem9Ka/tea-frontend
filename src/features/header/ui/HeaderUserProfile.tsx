@@ -46,6 +46,13 @@ export function HeaderUserProfile() {
               Теги
             </Link>
           </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <Link {...ROUTES.ADMIN_UNITS}>
+              <Iconify icon={Icon.Weight} className='size-4' />
+              Ед. изм.
+            </Link>
+          </DropdownMenuItem>
         </>) : null}
         <div className='px-2 py-1.5'>
           <ThemeTabs />

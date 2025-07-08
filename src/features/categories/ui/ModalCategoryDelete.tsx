@@ -7,9 +7,10 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/aler
 import { Button } from '@/shared/components/ui/button';
 import { DEFAULT_ERROR_MESSAGE } from '@/shared/constants';
 import { useAbortController } from '@/shared/hooks/useAbortSignal.ts';
+import type { MaybePromise } from '@/shared/types/types.ts';
 
 
-type OnSuccess = () => void | PromiseLike<void>;
+type OnSuccess = () => MaybePromise;
 
 type CategoryDeleteFormProps = Pick<Category, 'id' | 'name'> & {
   onSuccess?: OnSuccess,
@@ -19,9 +20,9 @@ type CategoryDeleteFormProps = Pick<Category, 'id' | 'name'> & {
 export function ModalCategoryDelete({ children, onSuccess: _onSuccess, ...category }: PropsWithChildren<CategoryDeleteFormProps>) {
   const [successDeleteSignal, onSuccessDelete] = useAbortController();
 
-  const onSuccess = () => {
+  const onSuccess = async () => {
     onSuccessDelete();
-    _onSuccess?.();
+    await _onSuccess?.();
   };
 
   return (

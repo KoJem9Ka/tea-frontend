@@ -13,6 +13,7 @@ import { Route as AdminRouteRouteImport } from './app/admin/route'
 import { Route as IndexRouteImport } from './app/index'
 import { Route as AdminIndexRouteImport } from './app/admin/index'
 import { Route as TeaIdRouteImport } from './app/tea.$id'
+import { Route as AdminUnitsRouteImport } from './app/admin/units'
 import { Route as AdminTeasRouteImport } from './app/admin/teas'
 import { Route as AdminTagsRouteImport } from './app/admin/tags'
 import { Route as AdminCategoriesRouteImport } from './app/admin/categories'
@@ -38,6 +39,11 @@ const TeaIdRoute = TeaIdRouteImport.update({
   id: '/tea/$id',
   path: '/tea/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUnitsRoute = AdminUnitsRouteImport.update({
+  id: '/units',
+  path: '/units',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminTeasRoute = AdminTeasRouteImport.update({
   id: '/teas',
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/tags': typeof AdminTagsRoute
   '/admin/teas': typeof AdminTeasRoute
+  '/admin/units': typeof AdminUnitsRoute
   '/tea/$id': typeof TeaIdRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/tea/$id': typeof AdminTeaIdRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/tags': typeof AdminTagsRoute
   '/admin/teas': typeof AdminTeasRoute
+  '/admin/units': typeof AdminUnitsRoute
   '/tea/$id': typeof TeaIdRoute
   '/admin': typeof AdminIndexRoute
   '/admin/tea/$id': typeof AdminTeaIdRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/admin/categories': typeof AdminCategoriesRoute
   '/admin/tags': typeof AdminTagsRoute
   '/admin/teas': typeof AdminTeasRoute
+  '/admin/units': typeof AdminUnitsRoute
   '/tea/$id': typeof TeaIdRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/tea/$id': typeof AdminTeaIdRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/tags'
     | '/admin/teas'
+    | '/admin/units'
     | '/tea/$id'
     | '/admin/'
     | '/admin/tea/$id'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/tags'
     | '/admin/teas'
+    | '/admin/units'
     | '/tea/$id'
     | '/admin'
     | '/admin/tea/$id'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/tags'
     | '/admin/teas'
+    | '/admin/units'
     | '/tea/$id'
     | '/admin/'
     | '/admin/tea/$id'
@@ -168,6 +180,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tea/$id'
       preLoaderRoute: typeof TeaIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/units': {
+      id: '/admin/units'
+      path: '/units'
+      fullPath: '/admin/units'
+      preLoaderRoute: typeof AdminUnitsRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
     '/admin/teas': {
       id: '/admin/teas'
@@ -211,6 +230,7 @@ interface AdminRouteRouteChildren {
   AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminTagsRoute: typeof AdminTagsRoute
   AdminTeasRoute: typeof AdminTeasRoute
+  AdminUnitsRoute: typeof AdminUnitsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminTeaIdRoute: typeof AdminTeaIdRoute
   AdminTeaCreateRoute: typeof AdminTeaCreateRoute
@@ -220,6 +240,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminCategoriesRoute: AdminCategoriesRoute,
   AdminTagsRoute: AdminTagsRoute,
   AdminTeasRoute: AdminTeasRoute,
+  AdminUnitsRoute: AdminUnitsRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminTeaIdRoute: AdminTeaIdRoute,
   AdminTeaCreateRoute: AdminTeaCreateRoute,

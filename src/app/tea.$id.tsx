@@ -9,6 +9,8 @@ import {
   teaQueryOptions,
   useTeaQuery
 } from '@/features/tea'
+import { unitsQueryOptions, useUnitSharedQuery } from '@/features/unit';
+import { unitPrettyPrint } from '@/shared/backbone/backend/model/unit.ts';
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
 import { Container } from '@/shared/components/Container';
@@ -36,6 +38,7 @@ export const Route = createFileRoute('/tea/$id')({
   loader: async ({ context: { queryClient }, params }) => {
     await Promise.all([
       queryClient.ensureQueryData(categoriesQueryOptions()),
+      queryClient.ensureQueryData(unitsQueryOptions()),
       queryClient.ensureQueryData(teaQueryOptions(params)),
     ]).catch((error: unknown) => throwErr(isNotFound(error) ? notFound() : error));
   },
@@ -47,14 +50,18 @@ function TeaPageComponent() {
   const { goBack } = useBackHeaderButton({ route: ROUTES.HOME });
   const params = Route.useParams();
   const teaQuery = useTeaQuery(params);
+  const unitQuery = useUnitSharedQuery(
+    { id: teaQuery.data?.unitId as string },
+    { enabled: !!teaQuery.data?.unitId },
+  );
   const categoryQuery = useCategoryQuery(
     { id: teaQuery.data?.categoryId as string },
     { enabled: !!teaQuery.data?.categoryId },
   );
 
-  if (teaQuery.isPending || categoryQuery.isPending) return <TeaPageSkeleton />;
+  if (teaQuery.isPending || categoryQuery.isPending || unitQuery.isPending) return <TeaPageSkeleton />;
 
-  const error = teaQuery.error || categoryQuery.error;
+  const error = teaQuery.error || categoryQuery.error || unitQuery.error;
   if (error) {
     const refetch = () => Promise.all([
       categoryQuery.isError ? categoryQuery.refetch() : undefined,
@@ -63,16 +70,22 @@ function TeaPageComponent() {
     return <ErrorRouteComponent error={error} reset={refetch as VoidFunction} />;
   }
 
-  return <TeaPage tea={teaQuery.data} category={categoryQuery.data} goBack={goBack} />;
+  return <TeaPage
+    tea={teaQuery.data}
+    category={categoryQuery.data}
+    unit={unitQuery.data}
+    goBack={goBack}
+  />;
 }
 
 type TeaPageProps = {
   tea: NonNullable<ReturnType<typeof useTeaQuery>['data']>,
   category: NonNullable<ReturnType<typeof useCategoryQuery>['data']>,
+  unit: NonNullable<ReturnType<typeof useUnitSharedQuery>['data']>,
   goBack: () => MaybePromise,
 }
 
-function TeaPage({ tea, category, goBack }: TeaPageProps) {
+function TeaPage({ tea, category, unit, goBack }: TeaPageProps) {
   useSignals();
 
   return (
@@ -112,8 +125,8 @@ function TeaPage({ tea, category, goBack }: TeaPageProps) {
             </div>
 
             <div>
-              <strong className='text-xl'>{formatterCurrencyRU.format(tea.weightPrice)}</strong>
-              <span className='text-muted-foreground'>{' / 100 г.'}</span>
+              <strong className='text-xl'>{formatterCurrencyRU.format(tea.unitPrice)}</strong>
+              <span className='text-muted-foreground'>{` / ${unitPrettyPrint(unit)}`}</span>
             </div>
           </div>
 

@@ -7,8 +7,11 @@ import type { z } from 'zod/v4';
 import { ModalCategoryUpsert, useCategoriesQuery } from '@/features/categories';
 import { ModalTagUpsert, useTagsQuery } from '@/features/tags';
 import { useTeaUpsertMutation } from '@/features/tea/hooks/useTeaUpsertMutation';
+import { ModalUnitUpsert, useUnitsQuery } from '@/features/unit';
 import { TeaUpsert } from '@/shared/backbone/backend/model/tea';
+import { unitPrettyPrint } from '@/shared/backbone/backend/model/unit.ts';
 import { FormCurrencyRubblesInput } from '@/shared/components/form/FormCurrencyRubblesInput.tsx';
+import { FormSelect } from '@/shared/components/form/FormSelect.tsx';
 import { FormSwitch } from '@/shared/components/form/FormSwitch.tsx';
 import { FormTextarea } from '@/shared/components/form/FormTextarea';
 import { FormTextInput } from '@/shared/components/form/FormTextInput';
@@ -23,28 +26,22 @@ import {
   FormProvider
 } from '@/shared/components/ui/form'
 import { MultiSelect } from '@/shared/components/ui/multi-select';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/shared/components/ui/select'
 import { getFieldPlaceholder } from '@/shared/lib/zod/field-utils';
+import type { MaybePromise } from '@/shared/types/types.ts';
 
 
 const FormSchema = TeaUpsert;
 type FormSchema = z.infer<typeof FormSchema>;
 
 
-
 export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
-  onSuccess?: (teaId: string) => void | PromiseLike<void>;
+  onSuccess?: (teaId: string) => MaybePromise;
   defaultValues?: FormSchema;
 }) {
   const mutation = useTeaUpsertMutation();
   const categoriesQuery = useCategoriesQuery();
   const tagsQuery = useTagsQuery();
+  const unitsQuery = useUnitsQuery();
   const tagsOptions = tagsQuery.data?.map(tag => ({
     label: tag.name,
     value: tag.id,
@@ -81,53 +78,55 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
         <FormCurrencyRubblesInput
           control={form.control}
           name='servePrice'
-          label='Стоимость чаепития'
+          label='Цена чаепития'
           placeholder={getFieldPlaceholder(FormSchema, 'servePrice')}
         />
 
-        <FormCurrencyRubblesInput
-          control={form.control}
-          name='weightPrice'
-          label='Стоимость за 100 г.'
-          placeholder={getFieldPlaceholder(FormSchema, 'weightPrice')}
-        />
+        <div className='grid grid-cols-[1fr_auto] items-start gap-3'>
+          <FormCurrencyRubblesInput
+            control={form.control}
+            name='unitPrice'
+            label='Цена на развес'
+            placeholder={getFieldPlaceholder(FormSchema, 'unitPrice')}
+          />
 
-        <FormField
+          <FormSelect
+            control={form.control}
+            label='Ед. изм.'
+            name='unitId'
+            options={unitsQuery.data?.map(unit => ({
+              label: unitPrettyPrint(unit),
+              value: unit.id,
+            })) || []}
+            placeholder='Выбор'
+            formControlWrapper={p => <div className='flex items-center gap-3' {...p} />}
+            rightSlot={
+              <ModalUnitUpsert onSuccess={unitId => void setTimeout(() => form.setValue('unitId', unitId, { shouldDirty: true }))}>
+                <Button size='icon' variant='outline'>
+                  <Iconify icon={Icon.AddPlus} />
+                </Button>
+              </ModalUnitUpsert>
+            }
+          />
+        </div>
+
+        <FormSelect
           control={form.control}
           name='categoryId'
-          render={({ field }) => (
-            <FormItem className='grow'>
-              <FormLabel>Категория</FormLabel>
-
-              <div className='flex items-center space-x-3'>
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='Категория' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categoriesQuery.data?.map(category => (
-                        <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-
-                <ModalCategoryUpsert
-                  onSuccess={categoryId => {
-                    // FIXME: idk why it immediately resets without scheduling on next macro task??? (but tags select works without it)
-                    setTimeout(() => form.setValue('categoryId', categoryId, { shouldDirty: true }));
-                  }}
-                >
-                  <Button size='icon' variant='outline'>
-                    <Iconify icon={Icon.AddPlus} />
-                  </Button>
-                </ModalCategoryUpsert>
-              </div>
-
-              <FormMessage />
-            </FormItem>
-          )}
+          options={categoriesQuery.data?.map(category => ({
+            label: category.name,
+            value: category.id,
+          })) || []}
+          placeholder={getFieldPlaceholder(FormSchema, 'categoryId')}
+          label='Категория'
+          formControlWrapper={p => <div className='flex items-center gap-3' {...p} />}
+          rightSlot={
+            <ModalCategoryUpsert onSuccess={categoryId => void setTimeout(() => form.setValue('categoryId', categoryId, { shouldDirty: true }))}>
+              <Button size='icon' variant='outline'>
+                <Iconify icon={Icon.AddPlus} />
+              </Button>
+            </ModalCategoryUpsert>
+          }
         />
 
         <FormField
@@ -144,7 +143,7 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
                     value={field.value}
                     options={tagsOptions}
                     onValueChange={field.onChange}
-                    placeholder='Теги'
+                    placeholder={getFieldPlaceholder(FormSchema, 'tagIds')}
                   />
                 </FormControl>
 
@@ -198,9 +197,10 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
 const DEFAULT_VALUES: FormSchema = {
   name: '',
   servePrice: 0,
-  weightPrice: 0,
+  unitPrice: 0,
   description: '',
   categoryId: '',
   tagIds: [],
+  unitId: '',
   isHidden: false,
 };

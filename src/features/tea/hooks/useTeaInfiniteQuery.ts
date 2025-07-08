@@ -1,5 +1,6 @@
-import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/react-query';
-import { TeaApi, type TeasListReqQueryFilters, type TeasListReqQueryPagination } from '@/features/tea/tea.api';
+import { type InfiniteData, infiniteQueryOptions, useInfiniteQuery } from '@tanstack/react-query';
+import { TeaFiltersStore } from '@/features/tea/tea-filters.store';
+import { TeaApi, type TeasListReqQueryFilters, type TeasListReqQueryPagination, type TeasListResBody } from '@/features/tea/tea.api';
 import { useSignals } from '@/shared/backbone/signals';
 import { queryClient } from '@/shared/backbone/tanstack-query/query-client';
 import { QUERY_KEYS } from '@/shared/backbone/tanstack-query/query-keys';
@@ -14,9 +15,14 @@ const DEFAULT_OPTIONS = infiniteQueryOptions({
     const isEnded = lastPageParam.page * lastPageParam.limit >= lastPage.total;
     return isEnded ? null : { page: lastPageParam.page + 1, limit: lastPageParam.limit };
   },
-  select: data => data.pages.flatMap(page => page.items),
   staleTime: Ms.minute(10),
 });
+
+const selectItems = (data: InfiniteData<TeasListResBody>) => data.pages.flatMap(page => page.items);
+const selectMinMaxPrices = (data: InfiniteData<TeasListResBody>) => {
+  const page = data.pages[0]!;
+  return { minServePrice: page.minServePrice, maxServePrice: page.maxServePrice };
+};
 
 export function teaInfiniteQueryOptions(query: TeasListReqQueryFilters = {}) {
   return infiniteQueryOptions({
@@ -25,9 +31,25 @@ export function teaInfiniteQueryOptions(query: TeasListReqQueryFilters = {}) {
   });
 }
 
-export function useTeaInfiniteQuery(query: TeasListReqQueryFilters = {}) {
+export function useTeaInfiniteQuery() {
   useSignals();
-  return useInfiniteQuery(teaInfiniteQueryOptions(query));
+  return useInfiniteQuery({
+    ...teaInfiniteQueryOptions(TeaFiltersStore.filterDebounced),
+    select: selectItems,
+  });
+}
+
+useTeaMinMaxPricesQuery.placeholderData = {
+  minServePrice: 0,
+  maxServePrice: 0,
+} as const;
+
+export function useTeaMinMaxPricesQuery() {
+  useSignals();
+  return useInfiniteQuery({
+    ...teaInfiniteQueryOptions(TeaFiltersStore.filterDebounced),
+    select: selectMinMaxPrices,
+  });
 }
 
 teaInfiniteQueryOptions.invalidateROOT = () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TEA.ROOT() });

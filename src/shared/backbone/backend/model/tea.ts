@@ -7,7 +7,8 @@ export const Tea = z.object({
   id: z.uuid(),
   name: z.string().trim().nonempty({ error: 'Обязательное поле' }),
   servePrice: z.number().positive({ error: issue => Number(issue.input) < 0 ? 'Должно быть положительным' : 'Обязательное поле' }),
-  weightPrice: z.number().positive({ error: issue => Number(issue.input) < 0 ? 'Должно быть положительным' : 'Обязательное поле' }),
+  unitPrice: z.number().positive({ error: issue => Number(issue.input) < 0 ? 'Должно быть положительным' : 'Обязательное поле' }),
+  unitId: z.uuid({ error: issue => !issue.input ? 'Обязательное поле' : 'Неверный формат' }),
   description: z.string().trim().transform(val => val || undefined).nullish(),
   categoryId: z.uuid({ error: issue => !issue.input ? 'Обязательное поле' : 'Неверный формат' }),
   tags: z.array(Tag).optional(),
@@ -20,7 +21,7 @@ export const TeaUpsert = Tea.omit({ id: true, tags: true }).extend({
   tagIds: z.array(z.uuid()).optional(),
 });
 
-export function teaToInput(tea: Tea): TeaUpsert {
+export function teaToTeaUpsert(tea: Tea): TeaUpsert {
   const teaInput = {
     ...tea,
     tagIds: tea.tags?.map(tag => tag.id),

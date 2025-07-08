@@ -1,10 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, notFound } from '@tanstack/react-router';
 
 
 export const Route = createFileRoute('/admin/teas')({
   component: RouteComponent,
+  beforeLoad: () => notFound(),
 });
 
 function RouteComponent() {
-  return <div>Hello /admin/tea!</div>;
+  // Unimplemented
+  // Admin's teas dashboard page: teas as table for PC
+  return <div />;
 }

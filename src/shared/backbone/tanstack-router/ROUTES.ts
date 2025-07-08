@@ -6,4 +6,5 @@ export const ROUTES = {
   ADMIN_TEA_NEW: ({ to: '/admin/tea/create' }) as const,
   ADMIN_CATEGORIES: { to: '/admin/categories' } as const,
   ADMIN_TAGS: { to: '/admin/tags' } as const,
+  ADMIN_UNITS: { to: '/admin/units' } as const,
 };

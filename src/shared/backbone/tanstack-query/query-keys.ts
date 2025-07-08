@@ -17,7 +17,6 @@ export const QUERY_KEYS = {
     PRIVATE_ROOT: () => [...QUERY_KEYS.PRIVATE(), 'TEA'] as const,
     LIST: (query: TeasListReqQueryFilters = {}) => [...QUERY_KEYS.TEA.PRIVATE_ROOT(), 'LIST', query] as const,
     ONE: (params: TeaOneReqParams) => [...QUERY_KEYS.TEA.PRIVATE_ROOT(), 'ONE', params] as const,
-    MIN_MAX_PRICES: () => [...QUERY_KEYS.TEA.ROOT(), 'MIN_MAX_PRICES'] as const,
   },
 
   CATEGORY: {
@@ -29,6 +28,11 @@ export const QUERY_KEYS = {
   TAG: {
     ROOT: () => ['TAG'] as const,
     LIST: () => [...QUERY_KEYS.TAG.ROOT(), 'LIST'] as const,
+  },
+
+  TEA_UNIT: {
+    ROOT: () => ['TEA_UNIT'] as const,
+    LIST: () => [...QUERY_KEYS.TEA_UNIT.ROOT(), 'LIST'] as const,
   },
 } as const;
 
@@ -48,6 +52,11 @@ export const MUTATION_KEYS = {
   TAG: {
     UPSERT: () => [...QUERY_KEYS.TAG.ROOT(), 'UPSERT'] as const,
     DELETE: () => [...QUERY_KEYS.TAG.ROOT(), 'DELETE'] as const,
+  },
+
+  TEA_UNIT: {
+    UPSERT: () => [...QUERY_KEYS.TEA_UNIT.ROOT(), 'UPSERT'] as const,
+    DELETE: () => [...QUERY_KEYS.TEA_UNIT.ROOT(), 'DELETE'] as const,
   },
 } as const;
 

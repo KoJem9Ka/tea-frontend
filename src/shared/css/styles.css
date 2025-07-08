@@ -2,7 +2,7 @@
 
 @plugin "tailwindcss-animate";
 @plugin "@iconify/tailwind4" {
-  prefixes : solar, lucide, line-md, icon-park-outline, svg-spinners;
+  prefixes : solar, lucide, fluent, line-md, icon-park-outline, svg-spinners;
 }
 
 /*@custom-variant dark (&:is(.dark *));*/

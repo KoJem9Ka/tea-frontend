@@ -2,7 +2,6 @@ import { Link } from '@tanstack/react-router';
 import { useInViewport } from 'ahooks';
 import { type ReactNode, useRef } from 'react';
 import { useTeaInfiniteQuery } from '@/features/tea/hooks/useTeaInfiniteQuery';
-import { TeaFiltersStore } from '@/features/tea/tea-filters.store';
 import { TeaCard } from '@/features/tea/ui/TeaCard';
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
@@ -21,7 +20,7 @@ import { cn } from '@/shared/lib/utils';
 
 export function TeaCards(props: { className?: string }) {
   useSignals();
-  const teasInfiniteQuery = useTeaInfiniteQuery(TeaFiltersStore.filterDebounced);
+  const teasInfiniteQuery = useTeaInfiniteQuery();
   const loaderRef = useRef<HTMLDivElement>(null);
   useInViewport(loaderRef, {
     callback: entry => {

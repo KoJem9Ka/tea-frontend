@@ -87,12 +87,12 @@ END LOOP;
         selected_category_id
 := category_ids[1 + floor(random() * array_length(category_ids, 1))::integer];
 
-INSERT INTO public.teas (name, serve_price, description, category_id, weight_price)
+INSERT INTO public.teas (name, serve_price, description, category_id, unit_price)
 VALUES (current_name,
         round((random() * 20 + 5):: numeric, 2), -- serve_price от 5 до 25
         current_description,
         selected_category_id,
-        round((random() * 100 + 20):: numeric, 2) -- weight_price от 20 до 120
+        round((random() * 100 + 20):: numeric, 2) -- unit_price от 20 до 120
        ) RETURNING id
 INTO new_tea_id;
 

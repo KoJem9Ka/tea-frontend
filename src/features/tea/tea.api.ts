@@ -25,7 +25,10 @@ export type TeasListReqQueryPagination = {
 }
 type TeasListReqQuery = TeasListReqQueryFilters & TeasListReqQueryPagination;
 export type TeasListResBody = z.infer<typeof TeasListResBody>;
-export const TeasListResBody = PaginatedResult(TeaWithRating);
+export const TeasListResBody = PaginatedResult(TeaWithRating).extend({
+  maxServePrice: z.number(),
+  minServePrice: z.number(),
+});
 
 
 export type TeaOneReqParams = { id: string };

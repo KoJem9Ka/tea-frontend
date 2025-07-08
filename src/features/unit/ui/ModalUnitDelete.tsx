@@ -1,9 +1,8 @@
-import type { PropsWithChildren } from 'react';
-import { useTagDeleteMutation } from '@/features/tags/hooks/useTagDeleteMutation';
-import type { Tag } from '@/shared/backbone/backend/model/tag';
+import { type PropsWithChildren } from 'react';
+import { useUnitDeleteMutation } from '@/features/unit/hooks/useUnitDeleteMutation.ts';
+import { type Unit, unitPrettyPrint } from '@/shared/backbone/backend/model/unit.ts';
 import { Icon, Iconify } from '@/shared/components/Iconify';
 import { ResponsiveDialog } from '@/shared/components/ResponsiveDialog.tsx';
-import { TeaTag } from '@/shared/components/TeaTag';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/alert';
 import { Button } from '@/shared/components/ui/button';
 import { DEFAULT_ERROR_MESSAGE } from '@/shared/constants';
@@ -12,51 +11,46 @@ import type { MaybePromise } from '@/shared/types/types.ts';
 
 
 type OnSuccess = () => MaybePromise;
-
-type TagDeleteFormProps = Tag & {
+type UnitDeleteFormProps = Unit & {
   onSuccess?: OnSuccess,
 };
 
 
-export function ModalTagDelete({ children, onSuccess: _onSuccess, ...tag }: PropsWithChildren<TagDeleteFormProps>) {
+export function ModalUnitDelete({ children, onSuccess: _onSuccess, ...unit }: PropsWithChildren<UnitDeleteFormProps>) {
   const [successDeleteSignal, onSuccessDelete] = useAbortController();
 
-  const onSuccess = () => {
+  const onSuccess = async () => {
+    await _onSuccess?.();
     onSuccessDelete();
-    _onSuccess?.();
   };
 
   return (
     <ResponsiveDialog
-      title='Удаление тега'
+      title='Удаление ед. изм.'
       signal={successDeleteSignal}
       triggerSlot={children}
-      formSlot={<TagDeleteForm {...tag} onSuccess={onSuccess} />}
+      formSlot={<UnitDeleteForm {...unit} onSuccess={onSuccess} />}
     />
   );
 }
 
 
-function TagDeleteForm({ onSuccess, ...tag }: TagDeleteFormProps) {
-  const m = useTagDeleteMutation();
+function UnitDeleteForm({ onSuccess, ...unit }: UnitDeleteFormProps) {
+  const m = useUnitDeleteMutation();
 
   const handleSubmit = (async () => {
-    await m.mutateAsync({ id: tag.id });
+    await m.mutateAsync({ id: unit.id });
     await onSuccess?.();
   }) as VoidFunction;
 
   return (
     <div className='grid gap-2 text-balance'>
-      <p className='text-center'>Вы уверены что хотите удалить тег?</p>
-
-      <div className='flex justify-center'>
-        <TeaTag name={tag.name} color={tag.color} />
-      </div>
+      <p className='text-center'>Вы уверены что хотите удалить ед. изм. «{unitPrettyPrint(unit)}»?</p>
 
       {m.isError ? (
         <Alert variant='destructive'>
           <Iconify icon={Icon.Danger} />
-          <AlertTitle>Не удалось удалить тег</AlertTitle>
+          <AlertTitle>Не удалось удалить ед. изм.</AlertTitle>
           <AlertDescription>
             <p>{DEFAULT_ERROR_MESSAGE}</p>
           </AlertDescription>

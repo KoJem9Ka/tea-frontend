@@ -20,13 +20,14 @@ import {
   SheetTrigger
 } from '@/shared/components/ui/sheet'
 import { useIsMd } from '@/shared/hooks/useResponsive';
+import type { MaybePromise } from '@/shared/types/types.ts';
 
 
 type ResponsiveDialogProps = {
   title?: string,
   triggerSlot: ReactNode,
   formSlot: ReactNode,
-  onSuccess?: () => void | PromiseLike<void>,
+  onSuccess?: () => MaybePromise,
   controlRef?: Ref<ResponsiveDialogControlRef>,
   signal?: AbortSignal,
 };
