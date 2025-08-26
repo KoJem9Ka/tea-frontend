@@ -10,7 +10,7 @@ import type { AdditionalQueryOptions } from '@/shared/types/types';
 const DEFAULT_OPTIONS = queryOptions({
   queryKey: QUERY_KEYS.CATEGORY.ONE({ id: '' }),
   queryFn: ({ queryKey: { 2: params } }) => CategoriesApi.one(params),
-  staleTime: Ms.minute(10),
+  staleTime: Ms.minute(3),
   initialDataUpdatedAt: () => categoriesQueryOptions.getState()
     ?.dataUpdatedAt,
 });

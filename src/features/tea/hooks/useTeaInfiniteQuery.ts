@@ -15,7 +15,7 @@ const DEFAULT_OPTIONS = infiniteQueryOptions({
     const isEnded = lastPageParam.page * lastPageParam.limit >= lastPage.total;
     return isEnded ? null : { page: lastPageParam.page + 1, limit: lastPageParam.limit };
   },
-  staleTime: Ms.minute(10),
+  staleTime: Ms.minute(3),
 });
 
 const selectItems = (data: InfiniteData<TeasListResBody>) => data.pages.flatMap(page => page.items);

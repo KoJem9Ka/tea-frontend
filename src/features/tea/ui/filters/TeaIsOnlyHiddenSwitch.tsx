@@ -14,7 +14,7 @@ export function TeaIsOnlyHiddenSwitch() {
 
   return (
     <Label htmlFor={id} className='border flex flex-row items-center justify-between rounded-md shadow-xs px-3 py-2 cursor-pointer'>
-      <span>Показать скрытые</span>
+      <span>Только скрытые</span>
       <Switch
         id={id}
         checked={isChecked}

@@ -12,7 +12,7 @@ export function categoriesQueryOptions() {
   return queryOptions({
     queryKey: QUERY_KEYS.CATEGORY.LIST(),
     queryFn: CategoriesApi.list,
-    staleTime: Ms.minute(10),
+    staleTime: Ms.minute(3),
     placeholderData: PLACEHOLDER_DATA,
   });
 }

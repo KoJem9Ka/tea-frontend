@@ -6,7 +6,6 @@ import { Stars } from '@/shared/components/Stars';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/shared/components/ui/card';
 import { Textarea } from '@/shared/components/ui/textarea';
-import { cn } from '@/shared/lib/utils';
 
 
 type TeaEvaluationFormProps = {
@@ -29,7 +28,7 @@ export function TeaEvaluationForm({ tea, className }: TeaEvaluationFormProps) {
   const isSubmitting = evaluateMutation.isPending;
 
   return (
-    <Card className={cn(className)}>
+    <Card className={className}>
       <CardContent className='space-y-3'>
         <CardTitle>Заметка</CardTitle>
         <form onSubmit={handleSubmit} className='flex flex-col space-y-3'>
@@ -54,7 +53,7 @@ export function TeaEvaluationForm({ tea, className }: TeaEvaluationFormProps) {
             className='w-full space-x-3'
             isLoading={isSubmitting}
           >
-            {isSubmitting ? <Iconify icon={Icon.LoadingSpinner} /> : <Iconify icon={Icon.SaveDiskette} />}
+            <Iconify icon={isSubmitting ? Icon.LoadingSpinner : Icon.SaveDiskette} />
             {isSubmitting ? 'Сохранение...' : tea.rating ? 'Обновить' : 'Оценить'}
           </Button>
         </form>

@@ -11,7 +11,7 @@ import { Ms } from '@/shared/lib/independent/ms';
 const DEFAULT_OPTIONS = queryOptions({
   queryKey: QUERY_KEYS.TEA.ONE({ id: '' }),
   queryFn: ({ queryKey: { 3: args } }) => TeaApi.one(args),
-  staleTime: Ms.minute(10),
+  staleTime: Ms.minute(3),
 });
 
 export function teaQueryOptions(args: TeaOneReqParams) {

@@ -30,7 +30,7 @@ export enum Icon {
   ThemeLight = 'line-md--sunny-filled',
   ThemeLightToDark = 'line-md--sunny-filled-loop-to-moon-filled-transition',
 
-  ArrowLeft = 'fluent--ios-arrow-left-24-regular',
+  ArrowLeft = 'fluent--ios-arrow-left-24-filled',
 
   EditPen = 'fluent--pen-24-regular',
   AddPlus = 'fluent--add-24-regular',
@@ -49,6 +49,6 @@ type IconifyProps = ComponentProps<'span'> & {
 
 export function Iconify({ className, icon, ...props }: IconifyProps) {
   return (
-    <span className={cn('iconify size-6 text-current', icon, className)} {...props} />
+    <span className={cn('iconify size-6 text-current m-0', icon, className)} {...props} />
   );
 }

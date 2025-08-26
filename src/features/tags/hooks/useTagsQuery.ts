@@ -10,7 +10,7 @@ export function tagsQueryOptions() {
   return queryOptions({
     queryKey: QUERY_KEYS.TAG.LIST(),
     queryFn: TagsApi.list,
-    staleTime: Ms.minute(10),
+    staleTime: Ms.minute(3),
     placeholderData: tagsQueryOptions.placeholderData,
   });
 }

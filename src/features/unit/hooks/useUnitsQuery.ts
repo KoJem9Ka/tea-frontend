@@ -8,7 +8,7 @@ import type { AdditionalQueryOptions } from '@/shared/types/types.ts';
 const DEFAULT_OPTIONS = queryOptions({
   queryKey: QUERY_KEYS.TEA_UNIT.LIST(),
   queryFn: UnitApi.list,
-  staleTime: Ms.minute(10),
+  staleTime: Ms.minute(3),
 });
 
 export function unitsQueryOptions() {

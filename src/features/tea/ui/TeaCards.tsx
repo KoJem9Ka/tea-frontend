@@ -1,8 +1,9 @@
 import { Link } from '@tanstack/react-router';
-import { useInViewport } from 'ahooks';
+import { useInViewport, usePrevious } from 'ahooks';
 import { type ReactNode, useRef } from 'react';
 import { useTeaInfiniteQuery } from '@/features/tea/hooks/useTeaInfiniteQuery';
 import { TeaCard } from '@/features/tea/ui/TeaCard';
+import type { TeaWithRating } from '@/shared/backbone/backend/model/tea.ts';
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
 import { Icon, Iconify } from '@/shared/components/Iconify';
@@ -21,6 +22,7 @@ import { cn } from '@/shared/lib/utils';
 export function TeaCards(props: { className?: string }) {
   useSignals();
   const teasInfiniteQuery = useTeaInfiniteQuery();
+  const teasPrev = usePrevious(teasInfiniteQuery.data);
   const loaderRef = useRef<HTMLDivElement>(null);
   useInViewport(loaderRef, {
     callback: entry => {
@@ -29,18 +31,21 @@ export function TeaCards(props: { className?: string }) {
     },
   });
 
+  const renderItems = (items: TeaWithRating[]) => items.map(tea => (
+    <Link key={tea.id} {...ROUTES.TEA_DETAILS(tea.id)}>
+      <TeaCard tea={tea} className='size-full' />
+    </Link>
+  ));
+
   let mainSlot: ReactNode;
   if (teasInfiniteQuery.status === 'pending')
-    mainSlot = <SkeletonView />;
+    mainSlot = teasPrev?.length ? renderItems(teasPrev) : <SkeletonView />;
   else if (teasInfiniteQuery.status === 'error')
     mainSlot = <ErrorView className='col-span-full' retry={teasInfiniteQuery.refetch as VoidFunction} />;
   else if (teasInfiniteQuery.data.length)
-    mainSlot = teasInfiniteQuery.data.map(tea => (
-      <Link key={tea.id} {...ROUTES.TEA_DETAILS(tea.id)}>
-        <TeaCard tea={tea} className='size-full' />
-      </Link>
-    ));
-  else mainSlot = <NotFoundView className='col-span-full' />;
+    mainSlot = renderItems(teasInfiniteQuery.data);
+  else
+    mainSlot = <NotFoundView className='col-span-full' />;
 
   return (
     <div className='space-y-4' {...props}>
@@ -59,7 +64,7 @@ export function TeaCards(props: { className?: string }) {
 
 function SkeletonView() {
   return (<>
-    {Array.from({ length: 25 }).map((_, i) => (
+    {Array.from({ length: 25 }, (_, i) => (
       <Skeleton key={i}>
         <div className='min-h-[170px] w-full' />
       </Skeleton>

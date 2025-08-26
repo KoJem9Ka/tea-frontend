@@ -12,7 +12,6 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@/shared/components/ui/sheet.tsx'
-import { cn } from '@/shared/lib/utils.ts';
 
 
 export function TeaFiltersSheet({ className, ...props }: ComponentProps<typeof Button>) {
@@ -23,7 +22,7 @@ export function TeaFiltersSheet({ className, ...props }: ComponentProps<typeof B
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant='outline' className={cn(className)}{...props}>
+        <Button variant='outline' className={className} {...props}>
           Фильтры
         </Button>
       </SheetTrigger>

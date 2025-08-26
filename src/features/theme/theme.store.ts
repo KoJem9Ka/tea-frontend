@@ -42,7 +42,7 @@ function createThemeStore(): ThemeStore {
     else localStorageSafe.theme.set(store.theme);
 
     document.body.classList.toggle('dark', store.isDark);
-    // document.body.classList.toggle('light', !store.isDark);
+    document.body.classList.toggle('light', !store.isDark);
   });
 
   return store;

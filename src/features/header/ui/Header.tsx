@@ -6,6 +6,7 @@ import { ThemeDropdown } from '@/features/theme';
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
 import { Container } from '@/shared/components/Container';
+import { IconAppLogoFramed } from '@/shared/components/icons/IconAppLogo.tsx';
 
 
 export function Header() {
@@ -17,7 +18,9 @@ export function Header() {
         <nav className='flex gap-4 items-center'>
           <BackHeaderButton />
 
-          <Link {...ROUTES.HOME}>🐼 TeaApp</Link>
+          <Link {...ROUTES.HOME} className='flex items-center gap-2'>
+            <IconAppLogoFramed className='size-10 text-white' frameClassName='light:fill-black' />
+          </Link>
         </nav>
 
         <div className='grow' />

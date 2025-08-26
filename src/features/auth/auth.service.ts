@@ -25,9 +25,9 @@ export const AuthService: AuthService = {
     if (AuthStore.isAuthorized) return;
 
     const { tgWebAppData } = retrieveLaunchParams();
+    if (!tgWebAppData) return;
     const initData = retrieveRawInitData();
     if (!initData) return;
-    if (!tgWebAppData) return;
     const { user } = tgWebAppData;
     if (!user) return;
 

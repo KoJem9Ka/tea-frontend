@@ -15,8 +15,8 @@ export function BackHeaderButton() {
 
   return (
     <Button variant='outline' onClick={goBack as VoidFunction}>
-      <Iconify icon={Icon.ArrowLeft} className='size-4' />
-      Назад
+      <Iconify icon={Icon.ArrowLeft} className='size-4 -ml-[2px] -mr-2' />
+      <span className='leading-4'>Назад</span>
     </Button>
   );
 }

@@ -68,7 +68,7 @@ function TagDeleteForm({ onSuccess, ...tag }: TagDeleteFormProps) {
         isLoading={m.isPending}
         onClick={handleSubmit}
       >
-        {m.isPending ? <Iconify icon={Icon.LoadingSpinner} /> : <Iconify icon={Icon.DeleteTrashCan} />}
+        <Iconify icon={m.isPending ? Icon.LoadingSpinner : Icon.DeleteTrashCan} />
         Удалить
       </Button>
     </div>
