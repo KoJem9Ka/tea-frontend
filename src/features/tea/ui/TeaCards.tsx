@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { useInViewport, usePrevious } from 'ahooks';
-import { type ReactNode, useRef } from 'react';
+import { type ComponentProps, type ReactNode, useRef } from 'react';
 import { useTeaInfiniteQuery } from '@/features/tea/hooks/useTeaInfiniteQuery';
 import { TeaCard } from '@/features/tea/ui/TeaCard';
 import type { TeaWithRating } from '@/shared/backbone/backend/model/tea.ts';
@@ -19,7 +19,7 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { cn } from '@/shared/lib/utils';
 
 
-export function TeaCards(props: { className?: string }) {
+export function TeaCards(props: ComponentProps<'div'>) {
   useSignals();
   const teasInfiniteQuery = useTeaInfiniteQuery();
   const teasPrev = usePrevious(teasInfiniteQuery.data);
@@ -31,9 +31,13 @@ export function TeaCards(props: { className?: string }) {
     },
   });
 
-  const renderItems = (items: TeaWithRating[]) => items.map(tea => (
+  const renderItems = (items: TeaWithRating[]) => items.map((tea, idx) => (
     <Link key={tea.id} {...ROUTES.TEA_DETAILS(tea.id)}>
-      <TeaCard tea={tea} className='size-full' />
+      <TeaCard
+        tea={tea}
+        className='size-full md:animate-in md:fade-in md:slide-in-from-bottom-3 md:fill-mode-backwards'
+        style={{ animationDelay: `${idx * 5}ms` }}
+      />
     </Link>
   ));
 
@@ -48,7 +52,7 @@ export function TeaCards(props: { className?: string }) {
     mainSlot = <NotFoundView className='col-span-full' />;
 
   return (
-    <div className='space-y-4' {...props}>
+    <div {...props}>
       <div className='grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4'>
         {mainSlot}
       </div>

@@ -317,7 +317,7 @@ export const MultiSelect = React.forwardRef<
                       className='cursor-pointer'
                     >
                       {isSelected
-                        ? <Iconify icon={Icon.CircleToCheck} className='size-5 text-primary' />
+                        ? <Iconify icon={Icon.CircleToCheck} className='size-5 text-primary dark:text-primary-foreground' />
                         : <Iconify icon={Icon.CheckToCircle} className='size-5' />}
                       {option.icon && (
                         <option.icon className='mr-2 h-4 w-4 text-muted-foreground' />

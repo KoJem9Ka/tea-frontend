@@ -13,7 +13,7 @@ export function Header() {
   useSignals();
 
   return (
-    <header className='bg-card text-card-foreground border'>
+    <header className='bg-card text-card-foreground border animate-in slide-in-from-top-10 fade-in-100'>
       <Container className='flex-row justify-between items-center py-2'>
         <nav className='flex gap-4 items-center'>
           <BackHeaderButton />

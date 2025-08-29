@@ -16,12 +16,15 @@ type TeaCardProps = ComponentProps<'div'> & {
   tea: TeaWithRating;
 };
 
-export const TeaCard = memo(({ tea, className, ...divProps }: TeaCardProps) => {
+export const TeaCard = memo(({ tea, ...divProps }: TeaCardProps) => {
   useSignals();
   const categoryQuery = useCategoryQuery({ id: tea.categoryId });
 
   return (
-    <Card className={cn(tea.isHidden && 'border border-destructive/50 bg-destructive/5', className)} {...divProps}>
+    <Card
+      {...divProps}
+      className={cn(tea.isHidden && 'border border-destructive/50 bg-destructive/5', divProps.className)}
+    >
       <CardContent className='grow flex flex-col justify-around gap-2'>
         <CardTitle>
           {tea.name}

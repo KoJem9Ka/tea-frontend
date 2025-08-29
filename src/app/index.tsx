@@ -27,6 +27,10 @@ export const Route = createFileRoute('/')({
 function HomePageComponent() {
   usePageHeightScreen();
 
+  // Cards container must have fixed-height for scroll restoration to work
+  // screenHeight - headerHeight - searchHeight - 3*gaps
+  const cardsContainerHeight = 'h-[calc(100vh-56px-36px-var(--spacing)*4*3)]';
+
   return (
     <Container className='grid gap-4 grid-cols-[1fr_auto] md:grid-cols-[auto_1fr] grid-rows-[auto_1fr]'>
       <TeaFiltersPanel className='row-span-full place-self-start max-md:hidden' />
@@ -35,7 +39,10 @@ function HomePageComponent() {
 
       <TeaFiltersSheet className='md:hidden' />
 
-      <TeaCards className='col-span-full md:col-start-2 min-h-0 overflow-y-auto max-md:px-4 max-md:-mx-4' />
+      <TeaCards
+        data-scroll-restoration-id='scroll-container'
+        className={`col-span-full md:col-start-2 min-h-0 overflow-y-auto max-md:px-4 max-md:-mx-4 ${cardsContainerHeight}`}
+      />
     </Container>
   );
 }

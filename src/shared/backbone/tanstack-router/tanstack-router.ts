@@ -12,6 +12,7 @@ export const router = createRouter({
   },
   defaultPreload: 'viewport',
   scrollRestoration: true,
+  getScrollRestorationKey: (location) => location.pathname,
   defaultStructuralSharing: true,
   defaultPreloadStaleTime: 0,
   defaultErrorComponent: ErrorRouteComponent,

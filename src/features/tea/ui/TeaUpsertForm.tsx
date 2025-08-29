@@ -26,6 +26,7 @@ import {
   FormProvider
 } from '@/shared/components/ui/form'
 import { MultiSelect } from '@/shared/components/ui/multi-select';
+import { SET_VALUE_DEFAULT_OPTIONS } from '@/shared/constants.ts';
 import { getFieldPlaceholder } from '@/shared/lib/zod/field-utils';
 import type { MaybePromise } from '@/shared/types/types.ts';
 
@@ -101,7 +102,7 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
             placeholder='Выбор'
             formControlWrapper={p => <div className='flex items-center gap-3' {...p} />}
             rightSlot={
-              <ModalUnitUpsert onSuccess={unitId => void setTimeout(() => form.setValue('unitId', unitId, { shouldDirty: true }))}>
+              <ModalUnitUpsert onSuccess={unitId => void setTimeout(() => form.setValue('unitId', unitId, SET_VALUE_DEFAULT_OPTIONS))}>
                 <Button size='icon' variant='outline'>
                   <Iconify icon={Icon.AddPlus} />
                 </Button>
@@ -121,7 +122,7 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
           label='Категория'
           formControlWrapper={p => <div className='flex items-center gap-3' {...p} />}
           rightSlot={
-            <ModalCategoryUpsert onSuccess={categoryId => void setTimeout(() => form.setValue('categoryId', categoryId, { shouldDirty: true }))}>
+            <ModalCategoryUpsert onSuccess={categoryId => void setTimeout(() => form.setValue('categoryId', categoryId, SET_VALUE_DEFAULT_OPTIONS))}>
               <Button size='icon' variant='outline'>
                 <Iconify icon={Icon.AddPlus} />
               </Button>
@@ -147,7 +148,7 @@ export function TeaUpsertForm({ onSuccess, defaultValues: defaultValuesRaw }: {
                   />
                 </FormControl>
 
-                <ModalTagUpsert onSuccess={tagId => form.setValue('tagIds', (field.value || []).concat(tagId), { shouldDirty: true })}>
+                <ModalTagUpsert onSuccess={tagId => form.setValue('tagIds', (field.value || []).concat(tagId), SET_VALUE_DEFAULT_OPTIONS)}>
                   <Button size='icon' variant='outline'>
                     <Iconify icon={Icon.AddPlus} />
                   </Button>

@@ -17,7 +17,7 @@ export enum Icon {
   StarFilledHalf = 'fluent--star-half-24-regular',
 
   CheckToCircle = 'fluent--circle-24-regular',
-  CircleToCheck = 'fluent--checkmark-circle-24-regular',
+  CircleToCheck = 'fluent--checkmark-circle-24-filled',
 
   Telegram = 'icon-park-outline--telegram',
   Logout = 'solar--logout-2-bold-duotone',
