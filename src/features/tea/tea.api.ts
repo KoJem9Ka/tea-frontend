@@ -63,6 +63,9 @@ type TeaEvaluateResBody = z.infer<typeof TeaEvaluateResBody>;
 const TeaEvaluateResBody = TeaWithRating;
 
 
+export type TeaEvaluationDeleteReqArgs = { id: string };
+
+
 export type TeaSetFavouriteReqArgs = { id: string, isFavourite: boolean };
 
 
@@ -73,6 +76,7 @@ type TeaApi = {
   one: (params: TeaOneReqParams) => Promise<TeaOneResBody>;
   delete: (params: TeaDeleteReqParams) => Promise<TeaDeleteResBody>;
   evaluate: (args: TeaEvaluateReqArgs) => Promise<TeaEvaluateResBody>;
+  evaluationDelete: (args: TeaEvaluationDeleteReqArgs) => Promise<void>;
   setFavourite: (args: TeaSetFavouriteReqArgs) => Promise<void>;
 }
 
@@ -128,9 +132,14 @@ export const TeaApi: TeaApi = {
     const res = await backendClient(url, { method, json: body }).json();
     return TeaEvaluateResBody.parse(res);
   },
+  async evaluationDelete({ id }) {
+    const url = `api/v1/teas/${id}/evaluate`;
+    const method = 'DELETE';
+    await backendClient(url, { method }).json<void>();
+  },
   async setFavourite({ id, isFavourite }) {
     const url = `api/v1/teas/${id}/favourite?isFavourite=${isFavourite}`;
     const method = 'POST';
-    return await backendClient(url, { method }).json<void>();
+    await backendClient(url, { method }).json<void>();
   },
 };

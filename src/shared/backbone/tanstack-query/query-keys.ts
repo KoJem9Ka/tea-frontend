@@ -40,6 +40,7 @@ export const MUTATION_KEYS = {
   TEA: {
     SET_FAVOURITE: () => [...QUERY_KEYS.TEA.PRIVATE_ROOT(), 'SET_FAVOURITE'] as const,
     EVALUATE: () => [...QUERY_KEYS.TEA.PRIVATE_ROOT(), 'EVALUATE'] as const,
+    EVALUATION_DELETE: () => [...QUERY_KEYS.TEA.PRIVATE_ROOT(), 'EVALUATION_DELETE'] as const,
     UPSERT: () => [...QUERY_KEYS.TEA.ROOT(), 'UPSERT'] as const,
     DELETE: () => [...QUERY_KEYS.TEA.ROOT(), 'DELETE'] as const,
   },
