@@ -1,0 +1,91 @@
+name: Build and Deploy Container to GHCR and Server
+
+on:
+  push:
+    branches:
+      - dev
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  metadata:
+    runs-on: ubuntu-22.04
+    outputs:
+      BRANCH: ${{ steps.extract_branch.outputs.BRANCH }}
+      VERSION: ${{ steps.extract_version.outputs.VERSION }}
+      DEV_TAG: ${{ steps.extract_dev_tag.outputs.DEV_TAG }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Extract branch name
+        id: extract_branch
+        run: |
+          RAW=$(git branch -r --contains ${{ github.ref }})
+          BRANCH=${RAW##*/}
+          echo "BRANCH: '$BRANCH'"
+          echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
+      - name: Extract dev tag
+        id: extract_DEV_TAG
+        run: |
+          TIMESTAMP=$(date -u +"%Y.%m.%d-%H.%M.%S")
+          COMMIT_SHORT_SHA=${GITHUB_SHA::7}
+          DEV_TAG="dev-$TIMESTAMP-$COMMIT_SHORT_SHA"
+          echo "DEV_TAG: '$DEV_TAG'"
+          echo "DEV_TAG=$DEV_TAG" >> $GITHUB_OUTPUT
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "VERSION: '$VERSION'"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+  build-and-push:
+    if: needs.metadata.outputs.BRANCH == 'main' || needs.metadata.outputs.BRANCH == 'dev'
+    needs: metadata
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USER }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ needs.metadata.outputs.BRANCH == 'main' && format('ghcr.io/kojem9ka/tea-frontend:latest,ghcr.io/kojem9ka/tea-frontend:{0}', needs.metadata.outputs.VERSION) || '' }}
+            ${{ needs.metadata.outputs.BRANCH == 'dev' && format('ghcr.io/kojem9ka/tea-frontend:dev,ghcr.io/kojem9ka/tea-frontend:{0}', needs.metadata.outputs.DEV_TAG) || '' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-to-server:
+    if: needs.metadata.outputs.BRANCH == 'main' || needs.metadata.outputs.BRANCH == 'dev'
+    needs:
+      - metadata
+      - build-and-push
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_TEA_SERVER_IP }}
+          port: ${{ secrets.SSH_TEA_SERVER_PORT }}
+          username: ${{ secrets.SSH_TEA_SERVER_USER }}
+          key: ${{ secrets.SSH_TEA_SERVER_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /home/projects/
+            SCRIPT_NAME=${{ needs.metadata.outputs.BRANCH == 'main' && 'tea-prod.sh' || 'tea-dev.sh' }}
+            ./$SCRIPT_NAME up frontend -d --force-recreate --pull always

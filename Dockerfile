@@ -7,12 +7,11 @@ RUN bun install --frozen-lockfile
 # Build
 COPY . .
 ENV NODE_ENV=production
-RUN bun build:only
+RUN bun run build
 
 FROM nginx:alpine AS runtime
-# Copy nginx config
+# Copy nginx config & expose its port
 COPY deployment/default.conf /etc/nginx/conf.d/default.conf
-# Expose port
 EXPOSE 80
 # Entrypoint
 COPY deployment/entrypoint.sh /usr/local/bin/entrypoint.sh
