@@ -1,17 +1,18 @@
 import { HeaderBackButtonStore } from '@/features/header/header-back-button.store';
+import { useBackFn } from '@/features/header/hooks/useBackFn.ts';
 import { useSignals } from '@/shared/backbone/signals';
 import { Icon, Iconify } from '@/shared/components/Iconify';
 import { Button } from '@/shared/components/ui/button';
-import { useBackFn } from '@/shared/hooks/useBackFn.ts';
+import { useIsTelegramMiniApp } from '@/shared/hooks/useIsTma.ts';
 
 
-export function BackHeaderButton() {
+export function HeaderBackButton() {
   useSignals();
-  const { target, isWebButtonVisible, isTelegramButtonVisible } = HeaderBackButtonStore;
-
+  const { target } = HeaderBackButtonStore;
+  const isTelegramMiniApp = useIsTelegramMiniApp();
   const { goBack } = useBackFn(target || {} as never);
 
-  if (!isWebButtonVisible || isTelegramButtonVisible) return null;
+  if (!target || isTelegramMiniApp) return null;
 
   return (
     <Button variant='outline' onClick={goBack as VoidFunction}>

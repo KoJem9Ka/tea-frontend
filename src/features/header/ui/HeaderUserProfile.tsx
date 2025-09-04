@@ -1,17 +1,22 @@
 import { Link } from '@tanstack/react-router';
-import { isTMA } from '@telegram-apps/sdk-react';
-import { useMemo } from 'react';
 import { AuthStore } from '@/features/auth';
-import { ThemeTabs } from '@/features/theme';
+import { DropdownMenuAnimationsSwitch, DropdownMenuThemeTabs } from '@/features/theme';
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES.ts';
 import { Icon, Iconify } from '@/shared/components/Iconify.tsx';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/shared/components/ui/dropdown-menu'
+import { useIsTelegramMiniApp } from '@/shared/hooks/useIsTma.ts';
 
 
 export function HeaderUserProfile() {
   useSignals();
-  const isTma = useMemo(() => isTMA(), []);
+  const isTma = useIsTelegramMiniApp();
   const user = AuthStore.user!;
 
   const name = [user.telegram.first_name, user.telegram.last_name].filter(Boolean).join(' ');
@@ -53,11 +58,16 @@ export function HeaderUserProfile() {
               Ед. изм.
             </Link>
           </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
         </>) : null}
-        <div className='px-2 py-1.5'>
-          <ThemeTabs />
-        </div>
+
+        <DropdownMenuThemeTabs />
+        <DropdownMenuAnimationsSwitch />
+
         {!isTma ? (<>
+          <DropdownMenuSeparator />
+
           <DropdownMenuItem variant='destructive' onClick={AuthStore.loggedOut}>
             <Iconify icon={Icon.Logout} className='size-4' />
             Выйти

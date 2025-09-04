@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useBackHeaderButton } from '@/features/header';
+import { useHeaderBackButton } from '@/features/header';
 import { ModalTagDelete, ModalTagUpsert, tagsQueryOptions, useTagsQuery } from '@/features/tags';
 import type { Tag } from '@/shared/backbone/backend/model/tag';
 import { useSignals } from '@/shared/backbone/signals';
@@ -18,6 +18,7 @@ import {
   TableRow
 } from '@/shared/components/ui/table'
 import { usePageHeightScreen } from '@/shared/hooks/usePageHeightScreen';
+import { staleTimeMin } from '@/shared/lib/staleTimeMin.ts';
 
 
 export const Route = createFileRoute('/admin/tags')({
@@ -25,12 +26,13 @@ export const Route = createFileRoute('/admin/tags')({
   loader: async ({ context: { queryClient } }) => {
     await queryClient.ensureQueryData(tagsQueryOptions());
   },
+  staleTime: staleTimeMin(tagsQueryOptions().staleTime),
   pendingComponent: TagsPageSkeleton,
 });
 
 function RouteComponent() {
   usePageHeightScreen();
-  useBackHeaderButton({ fallback: ROUTES.HOME });
+  useHeaderBackButton({ fallback: ROUTES.HOME });
   const tagsQuery = useTagsQuery();
 
   if (tagsQuery.isPending || tagsQuery.isPlaceholderData) return <TagsPageSkeleton />;

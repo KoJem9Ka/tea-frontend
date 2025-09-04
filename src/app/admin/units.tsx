@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useBackHeaderButton } from '@/features/header';
+import { useHeaderBackButton } from '@/features/header';
 import { ModalUnitDelete, ModalUnitUpsert, unitsQueryOptions, useUnitsQuery } from '@/features/unit';
 import { type Unit, unitPrettyPrint } from '@/shared/backbone/backend/model/unit';
 import { useSignals } from '@/shared/backbone/signals';
@@ -17,6 +17,7 @@ import {
   TableRow
 } from '@/shared/components/ui/table'
 import { usePageHeightScreen } from '@/shared/hooks/usePageHeightScreen.ts';
+import { staleTimeMin } from '@/shared/lib/staleTimeMin.ts';
 
 
 export const Route = createFileRoute('/admin/units')({
@@ -24,12 +25,13 @@ export const Route = createFileRoute('/admin/units')({
   loader: async ({ context: { queryClient } }) => {
     await queryClient.ensureQueryData(unitsQueryOptions());
   },
+  staleTime: staleTimeMin(unitsQueryOptions().staleTime),
   pendingComponent: UnitsPageSkeleton,
 });
 
 function RouteComponent() {
   usePageHeightScreen();
-  useBackHeaderButton({ fallback: ROUTES.HOME });
+  useHeaderBackButton({ fallback: ROUTES.HOME });
   const unitsQuery = useUnitsQuery();
 
   if (unitsQuery.isPending || unitsQuery.isPlaceholderData) return <UnitsPageSkeleton />;

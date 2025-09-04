@@ -1,38 +1,34 @@
 import { backButton } from '@telegram-apps/sdk';
-import { noop } from 'lodash-es';
 import type { MaybePromise } from '@/shared/types/types.ts';
 
 
 type TelegramNativeBackButtonService = {
-  enable: (onBackFn: () => MaybePromise) => VoidFunction;
+  enable: (onBackFn: () => MaybePromise) => VoidFunction | void;
 }
 
 export const TelegramNativeBackButtonService: TelegramNativeBackButtonService = {
   enable(onBackFn) {
     try {
-      if (!backButton.isMounted() && backButton.mount.isAvailable()) backButton.mount();
-      if (!backButton.isVisible() && backButton.show.isAvailable()) backButton.show();
+      if (!backButton.isMounted()) backButton.mount.ifAvailable();
+      if (!backButton.isVisible()) backButton.show.ifAvailable();
 
-      let isDisposed = 0;
-
-      const dispose = backButton.onClick.isAvailable()
-        ? backButton.onClick(() => {
-          disposeWrapper();
-          void onBackFn();
-        })
-        : noop;
-
+      let isDisposed = false;
       const disposeWrapper = () => {
-        if (isDisposed++ === 0) {
-          if (backButton.isVisible() && backButton.hide.isAvailable()) backButton.hide();
-          dispose();
-        }
+        if (isDisposed) return;
+        isDisposed = true;
+        backButton.hide.ifAvailable();
+        backButton.offClick.ifAvailable(onClick);
+        dispose?.();
       };
+      const onClick = () => {
+        disposeWrapper();
+        void onBackFn();
+      };
+      const { 1: dispose } = backButton.onClick.ifAvailable(onClick);
 
       return disposeWrapper;
     } catch (error) {
       console.warn('Failed to enable Telegram native BackButton:', error);
-      return noop;
     }
   },
 };

@@ -5,12 +5,12 @@ import { Tabs, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import type { Theme } from '@/shared/types/theme.ts';
 
 
-export function ThemeTabs() {
+export function DropdownMenuThemeTabs() {
   useSignals();
 
   return (
-    <Tabs value={ThemeStore.theme} onValueChange={ThemeStore.setTheme as never}>
-      <TabsList>
+    <Tabs className='mx-2 my-1.5' value={ThemeStore.theme} onValueChange={ThemeStore.setTheme as never}>
+      <TabsList className='w-full'>
         {Object.entries(themeNames).map(([key, [icon, label]]) => (
           <TabsTrigger key={key} value={key as Theme} aria-label={label}>
             <Iconify icon={icon} />

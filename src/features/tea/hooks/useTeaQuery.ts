@@ -31,5 +31,6 @@ export function useTeaQuery(args: TeaOneReqParams) {
   return useQuery(teaQueryOptions(args));
 }
 
+teaQueryOptions.DEFAULT_OPTIONS = DEFAULT_OPTIONS;
 teaQueryOptions.invalidateROOT = () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TEA.ROOT() });
 teaQueryOptions.prefetch = (...args: Parameters<typeof teaQueryOptions>) => queryClient.prefetchQuery(teaQueryOptions(...args));

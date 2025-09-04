@@ -1,2 +1,2 @@
-export { Header } from '@/features/header/ui/Header';
-export { useBackHeaderButton } from '@/features/header/hooks/useBackHeaderButton';
+export { Header } from './ui/Header';
+export { useHeaderBackButton } from './hooks/useHeaderBackButton.ts';

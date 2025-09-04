@@ -3,7 +3,6 @@ import { useInViewport, usePrevious } from 'ahooks';
 import { type ComponentProps, type ReactNode, useRef } from 'react';
 import { useTeaInfiniteQuery } from '@/features/tea/hooks/useTeaInfiniteQuery';
 import { TeaCard } from '@/features/tea/ui/TeaCard';
-import type { TeaWithRating } from '@/shared/backbone/backend/model/tea.ts';
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
 import { Icon, Iconify } from '@/shared/components/Iconify';
@@ -23,6 +22,7 @@ export function TeaCards(props: ComponentProps<'div'>) {
   useSignals();
   const teasInfiniteQuery = useTeaInfiniteQuery();
   const teasPrev = usePrevious(teasInfiniteQuery.data);
+  const items = teasInfiniteQuery.data || teasPrev || [];
   const loaderRef = useRef<HTMLDivElement>(null);
   useInViewport(loaderRef, {
     callback: entry => {
@@ -31,23 +31,19 @@ export function TeaCards(props: ComponentProps<'div'>) {
     },
   });
 
-  const renderItems = (items: TeaWithRating[]) => items.map((tea, idx) => (
+  const renderItems = () => items.map(tea => (
     <Link key={tea.id} {...ROUTES.TEA_DETAILS(tea.id)}>
-      <TeaCard
-        tea={tea}
-        className='size-full md:animate-in md:fade-in md:slide-in-from-bottom-3 md:fill-mode-backwards'
-        style={{ animationDelay: `${idx * 5}ms` }}
-      />
+      <TeaCard tea={tea} />
     </Link>
   ));
 
   let mainSlot: ReactNode;
   if (teasInfiniteQuery.status === 'pending')
-    mainSlot = teasPrev?.length ? renderItems(teasPrev) : <SkeletonView />;
+    mainSlot = teasPrev?.length ? renderItems() : <SkeletonView />;
   else if (teasInfiniteQuery.status === 'error')
     mainSlot = <ErrorView className='col-span-full' retry={teasInfiniteQuery.refetch as VoidFunction} />;
   else if (teasInfiniteQuery.data.length)
-    mainSlot = renderItems(teasInfiniteQuery.data);
+    mainSlot = renderItems();
   else
     mainSlot = <NotFoundView className='col-span-full' />;
 

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { categoriesQueryOptions, ModalCategoryDelete, ModalCategoryUpsert, useCategoriesQuery } from '@/features/categories';
-import { useBackHeaderButton } from '@/features/header';
+import { useHeaderBackButton } from '@/features/header';
 import type { Category } from '@/shared/backbone/backend/model/category';
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
@@ -17,6 +17,7 @@ import {
   TableRow
 } from '@/shared/components/ui/table'
 import { usePageHeightScreen } from '@/shared/hooks/usePageHeightScreen.ts';
+import { staleTimeMin } from '@/shared/lib/staleTimeMin.ts';
 
 
 export const Route = createFileRoute('/admin/categories')({
@@ -24,12 +25,13 @@ export const Route = createFileRoute('/admin/categories')({
   loader: async ({ context: { queryClient } }) => {
     await queryClient.ensureQueryData(categoriesQueryOptions());
   },
+  staleTime: staleTimeMin(categoriesQueryOptions().staleTime),
   pendingComponent: CategoriesPageSkeleton,
 });
 
 function RouteComponent() {
   usePageHeightScreen();
-  useBackHeaderButton({ fallback: ROUTES.HOME });
+  useHeaderBackButton({ fallback: ROUTES.HOME });
   const categoriesQuery = useCategoriesQuery();
 
   if (categoriesQuery.isPending || categoriesQuery.isPlaceholderData) return <CategoriesPageSkeleton />;

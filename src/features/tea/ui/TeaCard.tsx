@@ -23,7 +23,7 @@ export const TeaCard = memo(({ tea, ...divProps }: TeaCardProps) => {
   return (
     <Card
       {...divProps}
-      className={cn(tea.isHidden && 'border border-destructive/50 bg-destructive/5', divProps.className)}
+      className={cn('size-full', tea.isHidden && 'border border-destructive/50 bg-destructive/5', divProps.className)}
     >
       <CardContent className='grow flex flex-col justify-around gap-2'>
         <CardTitle>

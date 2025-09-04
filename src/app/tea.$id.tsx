@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { AuthStore, TelegramLoginCustomButton } from '@/features/auth';
 import { categoriesQueryOptions, useCategoryQuery } from '@/features/categories';
-import { useBackHeaderButton } from '@/features/header';
+import { useHeaderBackButton } from '@/features/header';
 import {
   ModalTeaDelete,
   TeaEvaluationForm,
@@ -30,6 +30,7 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { formatterCurrencyRU } from '@/shared/lib/independent/formatter-currency-ru';
 import { isNotFound } from '@/shared/lib/independent/http';
 import { throwErr } from '@/shared/lib/independent/throw';
+import { staleTimeMin } from '@/shared/lib/staleTimeMin.ts';
 import type { MaybePromise } from '@/shared/types/types.ts';
 
 
@@ -42,12 +43,13 @@ export const Route = createFileRoute('/tea/$id')({
       queryClient.ensureQueryData(teaQueryOptions(params)),
     ]).catch((error: unknown) => throwErr(isNotFound(error) ? notFound() : error));
   },
+  staleTime: staleTimeMin(teaQueryOptions.DEFAULT_OPTIONS.staleTime, categoriesQueryOptions().staleTime, unitsQueryOptions().staleTime),
   pendingComponent: TeaPageSkeleton,
 });
 
 function TeaPageComponent() {
   useSignals();
-  const { goBack } = useBackHeaderButton({ route: ROUTES.HOME });
+  const { goBack } = useHeaderBackButton({ route: ROUTES.HOME });
   const params = Route.useParams();
   const teaQuery = useTeaQuery(params);
   const unitQuery = useUnitSharedQuery(

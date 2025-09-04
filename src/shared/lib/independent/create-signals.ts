@@ -96,15 +96,21 @@ export function createSignals({ devtools }: Args = {}) {
   }
 
   function batch<T>(fn: () => T, action?: string, payload?: unknown): T {
-    if (action) actionStack.push(action);
-    if (payload !== undefined) payloadStack.push(payload);
+    if (action) {
+      actionStack.push(action);
+      payloadStack.push(payload);
+    }
 
-    const result = _batch(fn);
-    if (actionStack.length > 1)
-      untracked(() => sendState({ isBatched: true }));
+    const result = untracked(() => {
+      const res = _batch(fn);
+      if (actionStack.length > 1) sendState({ isBatched: true });
+      return res;
+    });
 
-    if (action) actionStack.pop();
-    if (payload !== undefined) payloadStack.pop();
+    if (action) {
+      actionStack.pop();
+      payloadStack.pop();
+    }
     return result;
   }
 

@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { categoriesQueryOptions } from '@/features/categories';
-import { useBackHeaderButton } from '@/features/header';
+import { useHeaderBackButton } from '@/features/header';
 import { tagsQueryOptions } from '@/features/tags';
 import { teaQueryOptions, TeaUpsertForm, useTeaQuery } from '@/features/tea';
 import { teaToTeaUpsert } from '@/shared/backbone/backend/model/tea';
@@ -10,6 +10,7 @@ import { ErrorRouteComponent } from '@/shared/components/routes/ErrorRouteCompon
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { isNotFound } from '@/shared/lib/independent/http';
 import { throwErr } from '@/shared/lib/independent/throw';
+import { staleTimeMin } from '@/shared/lib/staleTimeMin.ts';
 
 
 export const Route = createFileRoute('/admin/tea/$id')({
@@ -19,13 +20,14 @@ export const Route = createFileRoute('/admin/tea/$id')({
     queryClient.ensureQueryData(categoriesQueryOptions()),
     queryClient.ensureQueryData(tagsQueryOptions()),
   ]).catch((error: unknown) => throwErr(isNotFound(error) ? notFound() : error)),
+  staleTime: staleTimeMin(teaQueryOptions.DEFAULT_OPTIONS.staleTime, categoriesQueryOptions().staleTime, tagsQueryOptions().staleTime),
   pendingComponent: TeaUpdatePageSkeleton,
 });
 
 function TeaUpdatePageComponent() {
   const params = Route.useParams();
   const teaQuery = useTeaQuery(params);
-  const { goBack } = useBackHeaderButton({ fallback: ROUTES.ADMIN_TEAS });
+  const { goBack } = useHeaderBackButton({ fallback: ROUTES.ADMIN_TEAS });
 
   if (teaQuery.isPending) return <TeaUpdatePageSkeleton />;
   if (teaQuery.isError) return <ErrorRouteComponent error={teaQuery.error} reset={teaQuery.refetch as VoidFunction} />;

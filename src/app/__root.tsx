@@ -1,11 +1,14 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
+import { createRootRouteWithContext, useMatches } from '@tanstack/react-router';
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { init, miniApp } from '@telegram-apps/sdk';
 import { isTMA } from '@telegram-apps/sdk-react';
+import { usePrevious } from 'ahooks';
+import { AnimatePresence } from 'motion/react';
 import { AuthService } from '@/features/auth';
 import { Header } from '@/features/header';
-// import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { AnimatedOutlet } from '@/shared/components/AnimatedOutlet.tsx';
 
 
 interface MyRouterContext {
@@ -29,11 +32,19 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 
 function RootComponent() {
+  const matches = useMatches();
+  const nextMatch = matches[matches.length - 1];
+  const routeIdPrev = usePrevious(nextMatch?.routeId);
+
   return <>
     <Header />
-    <Outlet />
+    <main className='relative'>
+      <AnimatePresence mode='popLayout'>
+        <AnimatedOutlet key={nextMatch?.id ?? ''} routeId={nextMatch?.routeId || '/'} routeIdPrev={routeIdPrev} />
+      </AnimatePresence>
+    </main>
 
-    {/*<TanStackRouterDevtools />*/}
+    <TanStackRouterDevtools />
     <ReactQueryDevtools buttonPosition='bottom-right' />
   </>;
 }

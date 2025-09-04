@@ -1,4 +1,6 @@
 import type { ComponentProps } from 'react';
+import { DropdownMenuAnimationsSwitch } from '@/features/theme/DropdownMenuAnimationsSwitch.tsx';
+import { DropdownMenuThemeTabs } from '@/features/theme/DropdownMenuThemeTabs.tsx';
 import { ThemeStore } from '@/features/theme/theme.store';
 import { useSignals } from '@/shared/backbone/signals';
 import { Icon, Iconify } from '@/shared/components/Iconify';
@@ -6,11 +8,10 @@ import { Button } from '@/shared/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/shared/components/ui/dropdown-menu'
-import type { Theme } from '@/shared/types/theme.ts';
 
 
 export function ThemeDropdown(props: ComponentProps<typeof Button>) {
@@ -23,19 +24,15 @@ export function ThemeDropdown(props: ComponentProps<typeof Button>) {
           <Iconify icon={ThemeStore.isDark ? Icon.ThemeLightToDark : Icon.ThemeDarkToLight} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className='w-[180px]' align='end'>
-        <DropdownMenuRadioGroup value={ThemeStore.theme} onValueChange={ThemeStore.setTheme as never}>
-          {Object.entries(themeNames).map(([key, name]) => (
-            <DropdownMenuRadioItem key={key} value={key as Theme}>{name}</DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
+
+      <DropdownMenuContent align='end'>
+        <DropdownMenuLabel>Тема</DropdownMenuLabel>
+        <DropdownMenuThemeTabs />
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuAnimationsSwitch />
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
-
-const themeNames: Record<Theme, string> = {
-  light: 'Светлая',
-  dark: 'Темная',
-  system: 'Системная',
-};

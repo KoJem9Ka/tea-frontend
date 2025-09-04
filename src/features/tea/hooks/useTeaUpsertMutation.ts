@@ -12,7 +12,7 @@ export function useTeaUpsertMutation() {
     mutationFn: TeaApi.upsert,
     onSuccess: async data => {
       TeaService.cacheUpdate(data);
-      await queryClient.invalidateQueries({ queryKey: [{}, 'TEA', 'LIST'] });
+      await queryClient.invalidateQueries({ queryKey: [{}, 'TEA'] });
     },
   });
 }

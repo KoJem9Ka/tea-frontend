@@ -6,3 +6,5 @@ import type { RequiredKeysOf } from 'type-fest';
 export type AdditionalQueryOptions<T extends object> = Omit<T, RequiredKeysOf<T>>;
 
 export type MaybePromise<T = void> = T | PromiseLike<T>;
+
+export type AsChildProp = { asChild?: boolean };

@@ -7,6 +7,7 @@ import { Theme } from '@/shared/types/theme.ts';
 
 export const localStorageSafe = makeLocalStorageSafe(config.appUniqueId, {
   authErrorCloses: z.number().positive(),
+  isAnimationsEnabled: z.boolean(),
   theme: Theme,
   user: User,
 });

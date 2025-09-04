@@ -11,6 +11,7 @@ import {
 } from '@/features/tea'
 import { Container } from '@/shared/components/Container';
 import { usePageHeightScreen } from '@/shared/hooks/usePageHeightScreen';
+import { staleTimeMin } from '@/shared/lib/staleTimeMin.ts';
 
 
 export const Route = createFileRoute('/')({
@@ -22,6 +23,7 @@ export const Route = createFileRoute('/')({
       queryClient.ensureInfiniteQueryData(teaInfiniteQueryOptions(TeaFiltersStore.filterDebounced)),
     ]);
   },
+  staleTime: staleTimeMin(categoriesQueryOptions().staleTime, tagsQueryOptions().staleTime, teaInfiniteQueryOptions().staleTime),
 });
 
 function HomePageComponent() {
