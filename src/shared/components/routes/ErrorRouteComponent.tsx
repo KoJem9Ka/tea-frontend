@@ -6,8 +6,10 @@ import { config } from '@/shared/backbone/config';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
 import { Container } from '@/shared/components/Container';
 import { Icon, Iconify } from '@/shared/components/Iconify';
+import { NotFoundRouteComponent } from '@/shared/components/routes/NotFoundRouteComponent.tsx';
 import { Button } from '@/shared/components/ui/button';
 import { DEFAULT_ERROR_MESSAGE } from '@/shared/constants.ts';
+import { isNotFound } from '@/shared/lib/independent/http.ts';
 
 
 export function ErrorRouteComponent(props: ErrorComponentProps) {
@@ -22,6 +24,8 @@ export function ErrorRouteComponent(props: ErrorComponentProps) {
     await router.invalidate();
     props.reset();
   };
+
+  if (isNotFound(props.error)) return <NotFoundRouteComponent />;
 
   return (
     <Container isCenter className='text-center text-balance gap-0'>

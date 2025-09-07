@@ -42,7 +42,7 @@ function TeaDeleteForm({ onSuccess, ...tea }: TeaDeleteFormProps) {
   const handleSubmit = (async () => {
     await m.mutateAsync({ id: tea.id });
     await onSuccess?.();
-    await onSuccessInvalidate();
+    await onSuccessInvalidate(tea.id);
   }) as VoidFunction;
 
   return (

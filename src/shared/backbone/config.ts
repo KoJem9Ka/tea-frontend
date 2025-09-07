@@ -41,4 +41,7 @@ export const config = Object.assign({
   isClient: typeof window !== 'undefined',
   isServer: typeof window === 'undefined',
   backendOrigin: new URL(location.origin),
+  animations: {
+    sharedLayoutDuration: 0.5,
+  },
 }, env.data);

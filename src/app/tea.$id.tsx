@@ -1,4 +1,6 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
+import { motion } from 'motion/react';
+import { type ComponentProps, useMemo } from 'react';
 import { AuthStore, TelegramLoginCustomButton } from '@/features/auth';
 import { categoriesQueryOptions, useCategoryQuery } from '@/features/categories';
 import { useHeaderBackButton } from '@/features/header';
@@ -11,6 +13,7 @@ import {
 } from '@/features/tea'
 import { unitsQueryOptions, useUnitSharedQuery } from '@/features/unit';
 import { unitPrettyPrint } from '@/shared/backbone/backend/model/unit.ts';
+import { config } from '@/shared/backbone/config.ts';
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
 import { Container } from '@/shared/components/Container';
@@ -67,6 +70,7 @@ function TeaPageComponent() {
   if (error) {
     const refetch = () => Promise.all([
       categoryQuery.isError ? categoryQuery.refetch() : undefined,
+      unitQuery.isError ? unitQuery.refetch() : undefined,
       teaQuery.isError ? teaQuery.refetch() : undefined,
     ]);
     return <ErrorRouteComponent error={error} reset={refetch as VoidFunction} />;
@@ -90,67 +94,89 @@ type TeaPageProps = {
 function TeaPage({ tea, category, unit, goBack }: TeaPageProps) {
   useSignals();
 
+  const motionProps = useMemo(() => {
+    const animation = {
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+    } satisfies ComponentProps<typeof motion.div>;
+    return ({
+      card: { ...animation, transition: { delay: config.animations.sharedLayoutDuration / 3 } },
+      form: { ...animation, transition: { delay: config.animations.sharedLayoutDuration / 2 } },
+      admin: { ...animation, transition: { delay: config.animations.sharedLayoutDuration / 2 + 0.2 } },
+    } satisfies Record<string, ComponentProps<typeof motion.div>>);
+  }, []);
+
   return (
     <Container isSmall>
       <Card>
-        <CardHeader>
-          <CardTitle className='text-2xl'>{tea.name}</CardTitle>
-          <p className='text-lg text-muted-foreground'>{category.name}</p>
-        </CardHeader>
+        <motion.div {...motionProps.card} className='space-y-2'>
+          <CardHeader>
+            <CardTitle className='text-2xl'>{tea.name}</CardTitle>
+            <p className='text-lg text-muted-foreground'>{category.name}</p>
+          </CardHeader>
 
-        <CardContent className='space-y-2'>
-          {tea.description && (
-            <p>{tea.description}</p>
-          )}
+          <CardContent className='space-y-1'>
+            {tea.description && (
+              <p>{tea.description}</p>
+            )}
 
-          {tea.tags && tea.tags.length > 0 && (
-            <div className='flex flex-wrap gap-2'>
-              {tea.tags.map(tag => <TeaTag key={tag.id} {...tag} />)}
+            {tea.tags && tea.tags.length > 0 && (
+              <div className='flex flex-wrap gap-2'>
+                {tea.tags.map(tag => <TeaTag key={tag.id} {...tag} />)}
+              </div>
+            )}
+
+            {typeof tea.averageRating === 'number' && (
+              <div className='flex flex-col'>
+                <p className='text-muted-foreground'>
+                  Средний рейтинг ({tea.averageRating}/10)
+                </p>
+                <Stars value={tea.averageRating} />
+              </div>
+            )}
+          </CardContent>
+
+          <CardFooter className='justify-between items-end'>
+            <div className='flex-col items-start'>
+              <div>
+                <strong className='text-xl'>{formatterCurrencyRU.format(tea.servePrice)}</strong>
+                <span className='text-muted-foreground'>{' / чаепитие'}</span>
+              </div>
+
+              <div>
+                <strong className='text-xl'>{formatterCurrencyRU.format(tea.unitPrice)}</strong>
+                <span className='text-muted-foreground'>{` / ${unitPrettyPrint(unit)}`}</span>
+              </div>
             </div>
-          )}
 
-          {typeof tea.averageRating === 'number' && (
-            <div className='flex flex-col'>
-              <p className='text-muted-foreground'>
-                Средний рейтинг ({tea.averageRating}/10)
-              </p>
-              <Stars value={tea.averageRating} />
-            </div>
-          )}
-        </CardContent>
-
-        <CardFooter className='justify-between items-end'>
-          <div className='flex-col items-start'>
-            <div>
-              <strong className='text-xl'>{formatterCurrencyRU.format(tea.servePrice)}</strong>
-              <span className='text-muted-foreground'>{' / чаепитие'}</span>
-            </div>
-
-            <div>
-              <strong className='text-xl'>{formatterCurrencyRU.format(tea.unitPrice)}</strong>
-              <span className='text-muted-foreground'>{` / ${unitPrettyPrint(unit)}`}</span>
-            </div>
-          </div>
-
-          <TeaFavouriteButton id={tea.id} isFavourite={tea.isFavourite} />
-        </CardFooter>
+            <TeaFavouriteButton id={tea.id} isFavourite={tea.isFavourite} />
+          </CardFooter>
+        </motion.div>
       </Card>
 
       {AuthStore.isAuthorized ? (
-        <TeaEvaluationForm tea={tea} />
+        <TeaEvaluationForm tea={tea} {...motionProps.form} />
       ) : (
-        <Card>
-          <CardContent className='text-center text-muted-foreground space-y-3 text-balance'>
-            <p>Войдите, чтобы оставить заметку</p>
-            <TelegramLoginCustomButton />
-          </CardContent>
+        <Card asChild>
+          <motion.div {...motionProps.form}>
+            <CardContent className='text-center text-muted-foreground space-y-3 text-balance'>
+              <p>Войдите, чтобы оставить заметку</p>
+              <TelegramLoginCustomButton />
+            </CardContent>
+          </motion.div>
         </Card>
       )}
 
       {AuthStore.isAdmin ? (<>
-        {tea.isHidden ? <Button variant='destructive' disabled>Скрыт из ассортимента</Button> : null}
+        {tea.isHidden ? (
+          <Button asChild variant='destructive' disabled>
+            <motion.button  {...motionProps.admin}>
+              Скрыт из ассортимента
+            </motion.button>
+          </Button>
+        ) : null}
 
-        <div className='grid grid-cols-2 gap-3'>
+        <motion.div className='grid grid-cols-2 gap-3' {...motionProps.admin}>
           <ModalTeaDelete onSuccess={goBack} id={tea.id} name={tea.name}>
             <Button variant='outline'><Iconify icon={Icon.DeleteTrashCan} />Удалить</Button>
           </ModalTeaDelete>
@@ -161,7 +187,7 @@ function TeaPage({ tea, category, unit, goBack }: TeaPageProps) {
               Редактировать
             </Link>
           </Button>
-        </div>
+        </motion.div>
       </>) : null}
     </Container>
   );

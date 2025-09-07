@@ -38,9 +38,14 @@ function RootComponent() {
 
   return <>
     <Header />
-    <main className='relative'>
+    <main className='relative grow flex flex-col'>
       <AnimatePresence mode='popLayout'>
-        <AnimatedOutlet key={nextMatch?.id ?? ''} routeId={nextMatch?.routeId || '/'} routeIdPrev={routeIdPrev} />
+        <AnimatedOutlet
+          className='grow flex flex-col'
+          key={nextMatch?.id ?? ''}
+          routeId={nextMatch?.routeId || '/'}
+          routeIdPrev={routeIdPrev}
+        />
       </AnimatePresence>
     </main>
 

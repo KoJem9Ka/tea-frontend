@@ -10,7 +10,6 @@ import { Ms } from '@/shared/lib/independent/ms';
 type TeaFiltersStoreRaw = {
   filter: SetRequired<TeasListReqQueryFilters, 'sortBy' | 'isAsc'>,
   filterDebounced: Shallow<TeasListReqQueryFilters>,
-  // isFilterNameEmpty: boolean,
   isFilterEmpty: boolean,
 
   setName: (name: string | null) => void,
@@ -43,9 +42,6 @@ function createTeaFiltersStore(): TeaFiltersStore {
     filter: createDefaultFilter(),
     filterDebounced: shallow(createDefaultFilter()),
 
-    // get isFilterNameEmpty(): boolean {
-    //   return !this.filter.name?.trim();
-    // },
     get isFilterEmpty(): boolean {
       return isEqual(this.filter, DEFAULT_FILTER);
     },

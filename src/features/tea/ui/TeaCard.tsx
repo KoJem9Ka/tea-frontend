@@ -1,7 +1,9 @@
 import { isEqual } from 'lodash-es';
+import { motion } from 'motion/react';
 import { type ComponentProps, memo } from 'react';
 import { useCategoryQuery } from '@/features/categories';
 import { TeaFavouriteButton } from '@/features/tea/ui/TeaFavouriteButton';
+import { ThemeStore } from '@/features/theme';
 import type { TeaWithRating } from '@/shared/backbone/backend/model/tea';
 import { useSignals } from '@/shared/backbone/signals';
 import { Stars } from '@/shared/components/Stars';
@@ -24,30 +26,33 @@ export const TeaCard = memo(({ tea, ...divProps }: TeaCardProps) => {
     <Card
       {...divProps}
       className={cn('size-full', tea.isHidden && 'border border-destructive/50 bg-destructive/5', divProps.className)}
+      asChild
     >
-      <CardContent className='grow flex flex-col justify-around gap-2'>
-        <CardTitle>
-          {tea.name}
-        </CardTitle>
+      <motion.div initial={{ scale: ThemeStore.isAnimationsEnabled ? 0.95 : 1 }} whileInView={{ scale: 1 }} viewport={{ amount: 0.25 }}>
+        <CardContent className='grow flex flex-col justify-around gap-2'>
+          <CardTitle>
+            {tea.name}
+          </CardTitle>
 
-        {categoryQuery.isPlaceholderData || categoryQuery.isPending ? (
-          <Skeleton className='w-fit text-transparent'>Категория</Skeleton>
-        ) : (
-          <p className='text-sm text-muted-foreground'>{categoryQuery.data?.name}</p>
-        )}
+          {categoryQuery.isPlaceholderData || categoryQuery.isPending ? (
+            <Skeleton className='w-fit text-transparent'>Категория</Skeleton>
+          ) : (
+            <p className='text-sm text-muted-foreground'>{categoryQuery.data?.name}</p>
+          )}
 
-        {tea.rating && <Stars value={tea.rating} />}
+          {tea.rating && <Stars value={tea.rating} />}
 
-        <div className='flex flex-wrap gap-2'>
-          {tea.tags?.map(tag => <TeaTag {...tag} key={tag.id} />)}
-        </div>
+          <div className='flex flex-wrap gap-2'>
+            {tea.tags?.map(tag => <TeaTag {...tag} key={tag.id} />)}
+          </div>
 
-        <div className='flex justify-between items-end'>
-          <span className='font-bold'>{formatterCurrencyRU.format(tea.servePrice)}</span>
+          <div className='flex justify-between items-end'>
+            <span className='font-bold'>{formatterCurrencyRU.format(tea.servePrice)}</span>
 
-          <TeaFavouriteButton id={tea.id} isFavourite={tea.isFavourite} />
-        </div>
-      </CardContent>
+            <TeaFavouriteButton id={tea.id} isFavourite={tea.isFavourite} />
+          </div>
+        </CardContent>
+      </motion.div>
     </Card>
   );
 }, isEqual);

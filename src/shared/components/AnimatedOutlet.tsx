@@ -3,6 +3,7 @@ import { cloneDeep } from 'lodash-es';
 import { motion, type Transition, useIsPresent, type Variants } from 'motion/react';
 import { type ComponentProps, useContext, useRef } from 'react';
 import type { FileRoutesById } from '@/routeTree.gen.ts';
+import { config } from '@/shared/backbone/config.ts';
 import { isMdMediaQuery } from '@/shared/hooks/useResponsive.ts';
 
 
@@ -85,11 +86,9 @@ const OFFSET_MAP = { none: 0, left: 1, right: -1, up: 1, down: -1 } as const sat
 const AXIS_MAP = { none: 'X', left: 'X', right: 'X', up: 'Y', down: 'Y' } as const satisfies Record<Direction, 'X' | 'Y'>;
 
 const TRANSITION_ON = {
-  type: 'spring',
-  get bounce() {
-    return isMdMediaQuery.matches ? 0 : 0.2;
-  },
-  duration: 0.6,
+  type: 'tween',
+  ease: 'circInOut',
+  duration: config.animations.sharedLayoutDuration,
 } as const satisfies Transition;
 
 export const ROUTE_TRANSITION_VARIANTS: Variants = {

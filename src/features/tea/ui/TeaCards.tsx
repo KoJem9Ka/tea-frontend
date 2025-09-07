@@ -1,11 +1,10 @@
 import { Link } from '@tanstack/react-router';
 import { useInViewport, usePrevious } from 'ahooks';
-import { type ComponentProps, type ReactNode, useRef } from 'react';
+import { type ComponentProps, type ReactNode, type Ref, useRef } from 'react';
 import { useTeaInfiniteQuery } from '@/features/tea/hooks/useTeaInfiniteQuery';
 import { TeaCard } from '@/features/tea/ui/TeaCard';
 import { useSignals } from '@/shared/backbone/signals';
 import { ROUTES } from '@/shared/backbone/tanstack-router/ROUTES';
-import { Icon, Iconify } from '@/shared/components/Iconify';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -39,7 +38,7 @@ export function TeaCards(props: ComponentProps<'div'>) {
 
   let mainSlot: ReactNode;
   if (teasInfiniteQuery.status === 'pending')
-    mainSlot = teasPrev?.length ? renderItems() : <SkeletonView />;
+    mainSlot = teasPrev?.length ? renderItems() : <SkeletonCards />;
   else if (teasInfiniteQuery.status === 'error')
     mainSlot = <ErrorView className='col-span-full' retry={teasInfiniteQuery.refetch as VoidFunction} />;
   else if (teasInfiniteQuery.data.length)
@@ -51,23 +50,22 @@ export function TeaCards(props: ComponentProps<'div'>) {
     <div {...props}>
       <div className='grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-4'>
         {mainSlot}
-      </div>
 
-      {teasInfiniteQuery.hasNextPage && (
-        <div className='flex pt-4' ref={loaderRef}>
-          <Iconify icon={Icon.LoadingSpinner} className='mx-auto size-14' />
-        </div>
-      )}
+        {teasInfiniteQuery.hasNextPage && (
+          <SkeletonCards
+            count={3}
+            firstRef={loaderRef}
+          />
+        )}
+      </div>
     </div>
   );
 }
 
-function SkeletonView() {
+function SkeletonCards(props: { count?: number, firstRef?: Ref<HTMLDivElement> }) {
   return (<>
-    {Array.from({ length: 25 }, (_, i) => (
-      <Skeleton key={i}>
-        <div className='min-h-[170px] w-full' />
-      </Skeleton>
+    {Array.from({ length: props.count ?? 25 }, (_, i) => (
+      <Skeleton key={i} ref={i === 0 ? props.firstRef : undefined} className='min-h-[170px]'/>
     ))}
   </>);
 }
